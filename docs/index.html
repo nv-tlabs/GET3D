@@ -294,7 +294,7 @@ figure {
                 <a href="assets/get3d_model.png">
                     <img width="100%" src="assets/get3d_model.png">
                 </a>
-                <p class="caption" style="margin-bottom: 1px;  text-align: center">
+                <p class="caption" style="margin-bottom: 1px;  text-align: justify">
                    We generate a 3D SDF and a texture field via two latent codes. We utilize DMTet to extract a 3D surface mesh from the SDF, and query the texture field at surface points to get colors. We train with adversarial losses defined on 2D images. In particular, we use a rasterization-based differentiable renderer to obtain RGB images and silhouettes. We utilize two 2D discriminators, each on RGB image, and silhouette, respectively, to classify whether the inputs are real or fake. The whole model is end-to-end trainable.
                 </p>
             </figure>
@@ -304,7 +304,7 @@ figure {
                 <source src="assets/teaser-rotate.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
-            <p class="caption" style="margin-bottom : 1px; text-align: center">
+            <p class="caption" style="margin-bottom : 1px; text-align: justify">
                 GET3D is able to generate diverse shapes with arbitrary topology, high-quality geometry and texture. 
             </p>
         </figure>
@@ -353,7 +353,7 @@ figure {
                 <source src="assets/full-scene-slide-1x1.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
-            <p class="caption" style="margin-bottom: 1px; text-align: center">
+            <p class="caption" style="margin-bottom: 1px; text-align: justify">
                 Qualitative results on unconditional 3D generation. We highlight the diversity and quality of our generated 3D meshes with textures, including: 1. wheels on the legs of the chairs; 2.  wheels, all the lights and windows for the cars; 3. mouse, ears, horns for the animals; 4.  back mirrors, wireframes on the tires for the motorbike, 5. the high-heeled shoes, cloths for humans
 
             </p>
@@ -368,7 +368,7 @@ figure {
                 <source src="assets/combined_car_swap.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
-            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+            <p class="caption" style="margin-bottom: 1px; text-align: justify;">
                 In each row, we show  shapes generated from the same geometry latent code, while changing the texture latent code. In each column, we show  shapes generated from the same texture latent code, while changing the geometry code. Our model achieves a good disentanglement between geometry and texture. 
                 </p>
         </figure>
@@ -379,7 +379,7 @@ figure {
                 <source src="assets/car_swap_interpolate.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
-            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+            <p class="caption" style="margin-bottom: 1px; text-align: justify;">
                 In each row, we show shapes generated from the same texture latent code, while interpolating the geometry latent code from left to right. In each column, we show shapes generated from the same geometry latent code, while interpolating the texture code from top to bottom. This result demonstrates a meaningful interpolation for each of them. 
                 </p>
         </figure>
@@ -392,7 +392,7 @@ figure {
                 <source src="assets/latent-interpolation.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
-            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+            <p class="caption" style="margin-bottom: 1px; text-align: justify;">
                 In each subfigure, we apply a random walk in the latent space and generate corresponding 3D shapes. GET3D is able to generate a smooth transition between different shapes for all categories. 
                 </p>
         </figure>
@@ -405,7 +405,7 @@ figure {
                 <source src="assets/local-variation-3x3.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
-            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+            <p class="caption" style="margin-bottom: 1px; text-align: justify;">
 In each row, we locally perturb the latent code by adding a small noise. In this way, GET3D is able to generate similar looking shapes with slight difference locally. 
                 </p>
         </figure>
@@ -417,7 +417,7 @@ In each row, we locally perturb the latent code by adding a small noise. In this
                 <source src="assets/material-prediction.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
-            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+            <p class="caption" style="margin-bottom: 1px; text-align: justify;">
                 Combined with <a href="https://nv-tlabs.github.io/DIBRPlus/">DIBR++</a>, GET3D is able to generate materials and produce meaningful view-dependent lighting effects in a completly unsupervised manner.
                 </p>
         </figure>
@@ -430,7 +430,7 @@ In each row, we locally perturb the latent code by adding a small noise. In this
                 <source src="assets/text2mesh.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
-            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+            <p class="caption" style="margin-bottom: 1px; text-align: justify;">
                Text-guided shape generation. We follow recent work <a href="https://stylegan-nada.github.io/">StyleGAN-NADA</a> , where users provide a text and we finetune our 3D generator by computing the directional CLIP loss on the rendered 2D images and the provided texts from the users. Our model generates a large amount of meaningful  shapes with text prompts from the users. 
                 </p>
         </figure>
