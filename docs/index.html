@@ -1,0 +1,501 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">google.load("jquery", "1.3.2");</script>
+
+<style type="text/css">
+body {
+    font-family: "Titillium Web", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
+    font-size: 17px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 980px;
+}
+h1 {
+    font-weight:300;
+    line-height: 1.15em;
+}
+
+h2 {
+    font-size: 1.75em;
+}
+a:link,a:visited {
+    color: #1367a7;
+    text-decoration: none;
+}
+a:hover {
+    color: #208799;
+}
+h1, h2, h3 {
+    text-align: center;
+}
+h1 {
+    font-size: 40px;
+    font-weight: 500;
+}
+h2 {
+    font-weight: 400;
+    margin: 16px 0px 4px 0px;
+}
+.paper-title {
+    padding: 16px 0px 16px 0px;
+}
+section {
+    margin: 32px 0px 32px 0px;
+    text-align: justify;
+    clear: both;
+}
+.col-6 {
+     width: 16.6%;
+     float: left;
+}
+.col-5 {
+     width: 20%;
+     float: left;
+}
+.col-4 {
+     width: 25%;
+     float: left;
+}
+.col-3 {
+     width: 33%;
+     float: left;
+}
+.col-2 {
+     width: 50%;
+     float: left;
+}
+.row, .author-row, .affil-row {
+     overflow: auto;
+}
+.author-row, .affil-row {
+    font-size: 20px;
+}
+.row {
+    margin: 16px 0px 16px 0px;
+}
+.authors {
+    font-size: 18px;
+}
+.affil-row {
+    margin-top: 16px;
+}
+.teaser {
+    max-width: 100%;
+}
+.text-center {
+    text-align: center;  
+}
+.screenshot {
+    width: 256px;
+    border: 1px solid #ddd;
+}
+.screenshot-el {
+    margin-bottom: 16px;
+}
+hr {
+    height: 1px;
+    border: 0; 
+    border-top: 1px solid #ddd;
+    margin: 0;
+}
+.material-icons {
+    vertical-align: -6px;
+}
+p {
+    line-height: 1.25em;
+}
+.caption {
+    font-size: 16px;
+    /*font-style: italic;*/
+    color: #666;
+    text-align: left;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+video {
+    display: block;
+    margin: auto;
+}
+figure {
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+#bibtex pre {
+    font-size: 14px;
+    background-color: #eee;
+    padding: 16px;
+}
+.blue {
+    color: #2c82c9;
+    font-weight: bold;
+}
+.orange {
+    color: #d35400;
+    font-weight: bold;
+}
+.flex-row {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+.paper-btn {
+  position: relative;
+  text-align: center;
+
+  display: inline-block;
+  margin: 8px;
+  padding: 8px 8px;
+
+  border-width: 0;
+  outline: none;
+  border-radius: 2px;
+  
+  background-color: #1367a7;
+  color: #ecf0f1 !important;
+  font-size: 20px;
+  width: 100px;
+  font-weight: 600;
+}
+
+.supp-btn {
+  position: relative;
+  text-align: center;
+
+  display: inline-block;
+  margin: 8px;
+  padding: 8px 8px;
+
+  border-width: 0;
+  outline: none;
+  border-radius: 2px;
+  
+  background-color: #1367a7;
+  color: #ecf0f1 !important;
+  font-size: 20px;
+  width: 150px;
+  font-weight: 600;
+}
+
+.paper-btn-parent {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0px;
+}
+.paper-btn:hover {
+    opacity: 0.85;
+}
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+.venue {
+    color: #1367a7;
+}
+
+
+
+.topnav {
+  overflow: hidden;
+  background-color: #EEEEEE;
+}
+
+.topnav a {
+  float: left;
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+
+
+</style>
+
+
+<div class="topnav" id="myTopnav">
+  <a href="https://www.nvidia.com/"><img width="100%" src="assets/nvidia.svg"></a>
+  <a href="https://nv-tlabs.github.io/" ><strong>Toronto AI Lab</strong></a>
+</div>
+
+<!-- End : Google Analytics Code -->
+<script type="text/javascript" src="../js/hidebib.js"></script>
+<link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,600,400italic,600italic,300,300italic' rel='stylesheet' type='text/css'>
+<head>
+    <title>GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images</title>
+    <meta property="og:description" content="GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+
+ <body>
+<div class="container">
+    <div class="paper-title">
+      <h1>GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images</h1>
+    </div>
+
+    
+    <div id="authors">
+        <div class="author-row">
+            
+            
+            <div class="col-4 text-center"><a href="http://www.cs.toronto.edu/~jungao/">Jun Gao</a><sup>1,2,3</sup></div>
+            <div class="col-4 text-center"><a href="http://www.cs.toronto.edu/~shenti11/">Tianchang Shen</a><sup>1,2,3</sup></div>
+            <div class="col-4 text-center"><a href="http://www.cs.toronto.edu/~zianwang/">Zian Wang</a><sup>1,2,3</sup></div>
+            <div class="col-4 text-center"><a href="http://www.cs.toronto.edu/~wenzheng/">Wenzheng Chen</a><sup>1,2,3</sup></div>
+            <div class="col-5 text-center"><a href="https://kangxue.org/">Kangxue Yin</a><sup>1</sup></div>
+            <div class="col-5 text-center"><a href="https://scholar.google.ca/citations?user=8q2ISMIAAAAJ&hl=en">Daiqing Li</a><sup>1</sup></div>
+            <div class="col-5 text-center"><a href="https://orlitany.github.io/">Or Litany</a><sup>1</sup></div>
+            <div class="col-5 text-center"><a href="https://zgojcic.github.io/">Zan Gojcic</a><sup>1</sup></div>
+            <div class="col-5 text-center"><a href="https://www.cs.toronto.edu/~fidler/">Sanja Fidler</a><sup>1,2,3</sup></div>
+        </div>
+
+        <div class="affil-row">
+            <div class="col-3 text-center"><sup>1</sup>NVIDIA</a></div>
+            <div class="col-3 text-center"><sup>2</sup>University of Toronto</div>
+            <div class="col-3 text-center"><sup>3</sup>Vector Institute</div>
+        </div>
+        <div class="affil-row">
+            <div class="venue text-center"><b>NeurIPS 2022</b></div>
+        </div>
+
+        <div style="clear: both">
+            <div class="paper-btn-parent">
+            <a class="supp-btn" href="">
+                <span class="material-icons"> description </span> 
+                 Paper
+            </a>
+            <a class="supp-btn" href="">
+                <span class="material-icons"> description </span> 
+                 Supplement
+            </a>
+            <a class="supp-btn" href="assets/bib.txt">
+                <span class="material-icons"> description </span> 
+                  BibTeX
+            </a>
+            <a class="supp-btn" href="https://github.com/nv-tlabs/GET3D">
+                <span class="material-icons"> description </span> 
+                  Code
+            </a>
+        </div></div>
+    </div>
+
+    <section id="teaser">
+            <figure style="width: 100%;">
+                <a href="assets/get3d_model.png">
+                    <img width="100%" src="assets/get3d_model.png">
+                </a>
+                <p class="caption" style="margin-bottom: 1px;  text-align: center">
+                   We generate a 3D SDF and a texture field via two latent codes. We utilize DMTet to extract a 3D surface mesh from the SDF, and query the texture field at surface points to get colors. We train with adversarial losses defined on 2D images. In particular, we use a rasterization-based differentiable renderer to obtain RGB images and silhouettes. We utilize two 2D discriminators, each on RGB image, and silhouette, respectively, to classify whether the inputs are real or fake. The whole model is end-to-end trainable.
+                </p>
+            </figure>
+            <br>
+            <figure style="width: 100%;">
+             <video class="centered" width="90%" controls muted loop autoplay>
+                <source src="assets/teaser-rotate.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="caption" style="margin-bottom : 1px; text-align: center">
+                GET3D is able to generate diverse shapes with arbitrary topology, high-quality geometry and texture. 
+            </p>
+        </figure>
+    </section>
+
+    <section id="abstract"/>
+        <h2>Abstract</h2>
+        <hr>
+        <p>
+            As several industries are moving towards modeling massive 3D virtual worlds, the need for content creation tools that can scale in terms of the quantity, quality, and diversity of 3D content is becoming evident. In our work, we aim to train performant 3D generative models that synthesize textured meshes which can be directly consumed by 3D rendering engines, thus immediately usable in downstream applications. Prior works on 3D generative modeling either lack geometric details, are limited in the mesh topology they can produce, typically do not support textures, or utilize neural renderers in the synthesis process, which makes their use in common 3D software non-trivial. In this work, we introduce GET3D, a Generative model that directly generates Explicit Textured 3D meshes with complex topology, rich geometric details, and high fidelity textures. We bridge recent success in the differentiable surface modeling, differentiable rendering as well as 2D Generative Adversarial Networks to train our model from 2D image collections. GET3D is able to generate high-quality 3D textured meshes, ranging from cars, chairs, animals, motorbikes and human characters to buildings, achieving significant improvements over previous methods.
+            </p>
+    </section>
+
+    <section id="paper">
+        <h2>Paper</h2>
+        <hr>
+        <div class="flex-row">
+            <div style="box-sizing: border-box; padding: 16px; margin: auto;">
+                <a href="assets/paper.pdf"><img class="screenshot" src="assets/get3d_paper_figure.png"></a>
+            </div>
+            <div style="width: 50%">
+                <p><b>GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images</b></p>
+                <p>Jun Gao, Tianchang Shen, Zian Wang, Wenzheng Chen, Kangxue Yin, Daiqing Li, Or Litany, Zan Gojcic, Sanja Fidler</p>
+                <div><span class="material-icons"> description </span><a href=""> Preprint</a></div>
+                <div><span class="material-icons"> description </span><a href=""> arXiv version</a></div>
+                <div><span class="material-icons"> description </span><a href=""> Supplement</a></div>
+                <div><span class="material-icons"> insert_comment </span><a href="assets/bib.txt"> BibTeX</a></div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="results">
+
+        <h2>Generated 3D Assets</h2>
+        <hr>
+
+        <figure style="width: 100%;">
+             <video class="centered" width="90%" controls muted loop autoplay>
+                <source src="assets/six-category-1x1.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </figure>
+
+        <figure style="width: 100%;">
+             <video class="centered" width="90%" controls muted loop autoplay>
+                <source src="assets/full-scene-slide-1x1.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="caption" style="margin-bottom: 1px; text-align: center">
+                Qualitative results on unconditional 3D generation. We highlight the diversity and quality of our generated 3D meshes with textures, including: 1. wheels on the legs of the chairs; 2.  wheels, all the lights and windows for the cars; 3. mouse, ears, horns for the animals; 4.  back mirrors, wireframes on the tires for the motorbike, 5. the high-heeled shoes, cloths for humans
+
+            </p>
+        </figure>
+
+
+        <h2>Disentanglement between Geometry and Texture</h2>
+        <hr>
+
+        <figure style="width: 100%;">
+             <video class="centered" width="90%" controls muted loop autoplay>
+                <source src="assets/combined_car_swap.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+                In each row, we show  shapes generated from the same texture latent code, while changing the geometry latent code. In each column, we show  shapes generated from the same geometry latent code, while changing the texture code. Our model achieves a good disentanglement between geometry and texture. 
+                </p>
+        </figure>
+
+
+        <figure style="width: 100%;">
+             <video class="centered" width="90%" controls muted loop autoplay>
+                <source src="assets/car_swap_interpolate.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+                In each row, we show shapes generated from the same texture latent code, while interpolating the geometry latent code from left to right. In each column, we show shapes generated from the same geometry latent code, while interpolating the texture code from top to bottom. This result demonstrates a meaningful interpolation for each of them. 
+                </p>
+        </figure>
+
+
+        <h2>Latent Code Interpolation</h2>
+        <hr>
+        <figure style="width: 100%;">
+             <video class="centered" width="90%" controls muted loop autoplay>
+                <source src="assets/latent-interpolation.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+                In each subfigure, we apply a random walk in the latent space and generate corresponding 3D shapes. GET3D is able to generate a smooth transition between different shapes for all categories. 
+                </p>
+        </figure>
+
+
+        <h2>Generating Novel Shapes</h2>
+        <hr>
+        <figure style="width: 100%;">
+             <video class="centered" width="90%" controls muted loop autoplay>
+                <source src="assets/local-variation-3x3.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+In each row, we locally perturb the latent code by adding a small noise. In this way, GET3D is able to generate similar looking shapes with slight difference locally. 
+                </p>
+        </figure>
+
+        <h2>Unsupervised Material Generation</h2>
+        <hr>
+        <figure style="width: 100%;">
+             <video class="centered" width="90%" controls muted loop autoplay>
+                <source src="assets/material-prediction.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+                Combined with <a href="https://nv-tlabs.github.io/DIBRPlus/">DIBR++</a>, GET3D is able to generate materials and produce meaningful view-dependent lighting effects in a completly unsupervised manner.
+                </p>
+        </figure>
+
+
+        <h2>Text-guided Shape Generation</h2>
+        <hr>
+        <figure style="width: 100%;">
+             <video class="centered" width="90%" controls muted loop autoplay>
+                <source src="assets/text2mesh.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="caption" style="margin-bottom: 1px; text-align: center;">
+               Text-guided shape generation. We follow recent work <a href="https://stylegan-nada.github.io/">StyleGAN-NADA</a> , where users provide a text and we finetune our 3D generator by computing the directional CLIP loss on the rendered 2D images and the provided texts from the users. Our model generates a large amount of meaningful  shapes with text prompts from the users. 
+                </p>
+        </figure>
+
+    </section>
+    
+
+    <section id="bibtex">
+        <h2>Citation</h2>
+        <hr>
+
+        <pre><code>
+@inproceedings{gao2022get3d,
+    title={GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images},
+    author={Jun Gao and Tianchang Shen and Zian Wang and Wenzheng Chen and Kangxue Yin 
+        and Daiqing Li and Or Litany and Zan Gojcic and Sanja Fidler},
+    booktitle={Advances In Neural Information Processing Systems},
+    year={2022}
+}
+</code></pre>
+    </section>
+
+        <section id="bibtex">
+        <h2>Further Information</h2>
+        <hr>
+        <p>
+            GET3D builds upon several previous works:
+            <ul>
+                <li><a href="https://nv-tlabs.github.io/DefTet/">Learning Deformable Tetrahedral Meshes for 3D Reconstruction (NeurIPS 2020)</a></li>
+                <li><a href="https://nv-tlabs.github.io/DMTet/">Deep Marching Tetrahedra: a Hybrid Representation for High-Resolution 3D Shape Synthesis (NeurIPS 2021)</a></li>
+                <li><a href="https://nvlabs.github.io/nvdiffrec/">Extracting Triangular 3D Models, Materials, and Lighting From Images (CVPR 2022)</a></li>
+                <li><a href="https://nv-tlabs.github.io/DIBRPlus/">DIB-R++: Learning to Predict Lighting and Material with a Hybrid Differentiable Renderer (NeurIPS 2021)</a></li>
+            </ul>
+            
+        </p>
+        <p>
+
+             Please also consider citing these papers if you follow our work.  
+        </p>
+        <pre><code>
+@inproceedings{dmtet,
+    title = {Deep Marching Tetrahedra: a Hybrid Representation for High-Resolution 3D Shape Synthesis},
+    author = {Tianchang Shen and Jun Gao and Kangxue Yin and Ming-Yu Liu and Sanja Fidler},
+    year = {2021},
+    booktitle = {Advances in Neural Information Processing Systems}
+}
+@inproceedings{nvdiffrec,
+    title={Extracting Triangular 3D Models, Materials, and Lighting From Images},
+    author={Munkberg, Jacob and Hasselgren, Jon and Shen, Tianchang and Gao, Jun and Chen, Wenzheng and 
+    Evans, Alex and M{\"u}ller, Thomas and Fidler, Sanja},
+    booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+    pages={8280--8290},
+    year={2022}
+}
+        </code></pre>
+
+    </section>
+
+<br />
+    
+
+</div>
+</body>
+</html>
