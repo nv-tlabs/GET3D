@@ -33,7 +33,7 @@ characters to buildings, achieving significant improvements over previous method
 Copyright &copy; 2022, NVIDIA Corporation & affiliates. All rights reserved.
 
 This work is made available under
-the [Nvidia Source Code License](https://github.com/nv-tlabs/GET3D/blob/main/LICENSE.txt).
+the [Nvidia Source Code License](https://github.com/nv-tlabs/GET3D/blob/master/LICENSE.txt).
 
 ## Citation
 
