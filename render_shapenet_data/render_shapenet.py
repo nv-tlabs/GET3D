@@ -125,6 +125,7 @@ def bounds(obj, local=False):
     o_details = collections.namedtuple('object_details', 'x y z')
     return o_details(**originals)
 
+# function from https://github.com/panmari/stanford-shapenet-renderer/blob/master/render_blender.py
 def get_3x4_RT_matrix_from_blender(cam):
     # bcam stands for blender camera
     # R_bcam2cv = Matrix(
