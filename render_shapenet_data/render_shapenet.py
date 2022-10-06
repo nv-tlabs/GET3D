@@ -8,8 +8,9 @@
 
 import argparse, sys, os, math, re
 import bpy
-from mathutils import Vector
+from mathutils import Vector, Matrix
 import numpy as np
+import json 
 
 parser = argparse.ArgumentParser(description='Renders given obj file by rotation a camera around it.')
 parser.add_argument(
@@ -124,6 +125,39 @@ def bounds(obj, local=False):
     o_details = collections.namedtuple('object_details', 'x y z')
     return o_details(**originals)
 
+# function from https://github.com/panmari/stanford-shapenet-renderer/blob/master/render_blender.py
+def get_3x4_RT_matrix_from_blender(cam):
+    # bcam stands for blender camera
+    # R_bcam2cv = Matrix(
+    #     ((1, 0,  0),
+    #     (0, 1, 0),
+    #     (0, 0, 1)))
+
+    # Transpose since the rotation is object rotation, 
+    # and we want coordinate rotation
+    # R_world2bcam = cam.rotation_euler.to_matrix().transposed()
+    # T_world2bcam = -1*R_world2bcam @ location
+    #
+    # Use matrix_world instead to account for all constraints
+    location, rotation = cam.matrix_world.decompose()[0:2]
+    R_world2bcam = rotation.to_matrix().transposed()
+
+    # Convert camera location to translation vector used in coordinate changes
+    # T_world2bcam = -1*R_world2bcam @ cam.location
+    # Use location from matrix_world to account for constraints:     
+    T_world2bcam = -1*R_world2bcam @ location
+
+    # # Build the coordinate transform matrix from world to computer vision camera
+    # R_world2cv = R_bcam2cv@R_world2bcam
+    # T_world2cv = R_bcam2cv@T_world2bcam
+
+    # put into 3x4 matrix
+    RT = Matrix((
+        R_world2bcam[0][:] + (T_world2bcam[0],),
+        R_world2bcam[1][:] + (T_world2bcam[1],),
+        R_world2bcam[2][:] + (T_world2bcam[2],)
+        ))
+    return RT
 
 imported_object = bpy.ops.import_scene.obj(filepath=args.obj, use_edges=False, use_smooth_groups=False, split_mode='OFF')
 
@@ -203,6 +237,14 @@ elevation_angle_list = elevation_angle_list * 30
 np.save(os.path.join(camera_follder, 'rotation'), rotation_angle_list)
 np.save(os.path.join(camera_follder, 'elevation'), elevation_angle_list)
 
+# creation of the transform.json
+to_export = {
+    'camera_angle_x': bpy.data.cameras[0].angle_x,
+    "aabb": [[-scale/2,-scale/2,-scale/2],
+             [scale/2,scale/2,scale/2]]
+}
+frames = [] 
+
 for i in range(0, args.views):
     cam_empty.rotation_euler[2] = math.radians(rotation_angle_list[i])
     cam_empty.rotation_euler[0] = math.radians(elevation_angle_list[i])
@@ -211,3 +253,29 @@ for i in range(0, args.views):
     render_file_path = os.path.join(img_follder, '%03d.png' % (i))
     scene.render.filepath = render_file_path
     bpy.ops.render.render(write_still=True)
+    # might not need it, but just in case cam is not updated correctly
+    bpy.context.view_layer.update()
+
+    rt = get_3x4_RT_matrix_from_blender(cam)
+    pos, rt, scale = cam.matrix_world.decompose()
+
+    rt = rt.to_matrix()
+    matrix = []
+    for ii in range(3):
+        a = []
+        for jj in range(3):
+            a.append(rt[ii][jj])
+        a.append(pos[ii])
+        matrix.append(a)
+    matrix.append([0,0,0,1])
+    print(matrix)
+
+    to_add = {\
+        "file_path":f'{str(i).zfill(3)}.png',
+        "transform_matrix":matrix
+    }
+    frames.append(to_add)
+
+to_export['frames'] = frames
+with open(f'{img_follder}/transforms.json', 'w') as f:
+    json.dump(to_export, f,indent=4)    
