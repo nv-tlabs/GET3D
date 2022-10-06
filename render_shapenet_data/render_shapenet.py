@@ -8,7 +8,7 @@
 
 import argparse, sys, os, math, re
 import bpy
-from mathutils import Vector
+from mathutils import Vector, Matrix
 import numpy as np
 import json 
 
@@ -152,7 +152,7 @@ def get_3x4_RT_matrix_from_blender(cam):
     # T_world2cv = R_bcam2cv@T_world2bcam
 
     # put into 3x4 matrix
-    RT = mathutils.Matrix((
+    RT = Matrix((
         R_world2bcam[0][:] + (T_world2bcam[0],),
         R_world2bcam[1][:] + (T_world2bcam[1],),
         R_world2bcam[2][:] + (T_world2bcam[2],)
@@ -240,8 +240,8 @@ np.save(os.path.join(camera_follder, 'elevation'), elevation_angle_list)
 # creation of the transform.json
 to_export = {
     'camera_angle_x': bpy.data.cameras[0].angle_x,
-    "aabb": [[-0.8,-0.8,0],
-             [0.8,0.8,1]]
+    "aabb": [[-scale/2,-scale/2,-scale/2],
+             [scale/2,scale/2,scale/2]]
 }
 frames = [] 
 
@@ -256,8 +256,8 @@ for i in range(0, args.views):
     # might not need it, but just in case cam is not updated correctly
     bpy.context.view_layer.update()
 
-    rt = get_3x4_RT_matrix_from_blender(obj_camera)
-    pos, rt, scale = obj_camera.matrix_world.decompose()
+    rt = get_3x4_RT_matrix_from_blender(cam)
+    pos, rt, scale = cam.matrix_world.decompose()
 
     rt = rt.to_matrix()
     matrix = []
