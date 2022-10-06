@@ -243,6 +243,7 @@ to_export = {
     "aabb": [[-0.8,-0.8,0],
              [0.8,0.8,1]]
 }
+frames = [] 
 
 for i in range(0, args.views):
     cam_empty.rotation_euler[2] = math.radians(rotation_angle_list[i])
