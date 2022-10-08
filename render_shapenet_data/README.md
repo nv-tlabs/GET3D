@@ -75,7 +75,8 @@ You can open the base scenes (located in the blender directory) and modify the l
 
 ## Comparison Between Cycles and Eevee
 Cycles is on the **Left**, Eevee is on the **Right**
-<img src="docs_img/cycles.png" alt="drawing" width="500"/> <img src="docs_img/eevee.png" alt="drawing" width="500"/>
+<br />
+<img src="docs_img/cycles.png" alt="drawing" width="400"/> <img src="docs_img/eevee.png" alt="drawing" width="400"/>
 
 ## Attribution
 
