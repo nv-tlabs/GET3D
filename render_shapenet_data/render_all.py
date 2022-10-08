@@ -21,7 +21,7 @@ parser.add_argument(
     '--blender_root', type=str, default='blender',
     help='path for blender')
 parser.add_argument(
-    '--shapenet_version', type=str, default='2',
+    '--shapenet_version', type=str, default='1',
     help='ShapeNet version 1 or 2')
 parser.add_argument(
     '--num_views', type=str, default='24',
@@ -35,6 +35,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 engine = args.engine
+quiet_mode = args.quiet_mode
 save_folder = args.save_folder
 dataset_list = args.dataset_list
 blender_root = args.blender_root
@@ -49,7 +50,6 @@ if not os.path.exists(dataset_list):
 if not os.path.exists(save_folder):
     os.makedirs(save_folder)
 
-synset_list = []
 scale_list = []
 path_list = []
 
@@ -65,23 +65,22 @@ with open(dataset_list, 'r') as f:
 #     "directory": "./shapenet/02958343"
 #   }
 for entry in dataset:
-    synset_list.append(entry['id'])
     scale_list.append(entry['scale'])
     path_list.append(entry['directory'])
 
 
 # for shapenet v2, we normalize the model location
 if shapenet_version == '2':
-    for synset, obj_scale, dataset_folder in zip(synset_list, scale_list, path_list):
-        file_list = sorted(os.listdir(os.path.join(dataset_folder, synset)))
+    for obj_scale, dataset_folder in zip(scale_list, path_list):
+        file_list = sorted(os.listdir(os.path.join(dataset_folder)))
         for file in file_list:
             # check if file_list+'/models' exists
-            if os.path.exists(os.path.join(dataset_folder, synset, file, 'models')):
+            if os.path.exists(os.path.join(dataset_folder, file, 'models')):
                 # move all files in file_list+'/models' to file_list
-                os.system('mv ' + os.path.join(dataset_folder, synset, file, 'models/*') + ' ' + os.path.join(dataset_folder, synset, file))
+                os.system('mv ' + os.path.join(dataset_folder, file, 'models/*') + ' ' + os.path.join(dataset_folder, file))
                 # remove file_list+'/models' if it exists
-                os.system('rm -rf ' + os.path.join(dataset_folder, synset, file, 'models'))
-            material_file = os.path.join(dataset_folder, synset, file, 'model_normalized.mtl')
+                os.system('rm -rf ' + os.path.join(dataset_folder, file, 'models'))
+            material_file = os.path.join(dataset_folder, file, 'model_normalized.mtl')
             # read material_file as a text file, replace any instance of '../images' with './images'
             with open(material_file, 'r') as f:
                 material_file_text = f.read()
@@ -96,13 +95,13 @@ if shapenet_version == '2':
     model_name = 'model_normalized.obj'
 
 suffix = ''
-if(args.quiet_mode):
+if(args.quiet_mode == '1'):
     suffix = ' >> tmp.out'
 
 for obj_scale, dataset_folder in zip(scale_list, path_list):
     file_list = sorted(os.listdir(os.path.join(dataset_folder)))
     for idx, file in enumerate(file_list):
-        render_cmd = '%s -b -P render_shapenet.py -- --output %s %s  --scale %f --views %s --resolution 1024 --engine %s' + suffix % (
-            blender_root, save_folder, os.path.join(dataset_folder, file, model_name), obj_scale, num_views, engine
+        render_cmd = '%s -b -P render_shapenet.py -- --output %s %s  --scale %f --views %s --engine %s%s' % (
+            blender_root, save_folder, os.path.join(dataset_folder, file, model_name), obj_scale, num_views, engine, suffix
         )
         os.system(render_cmd)
