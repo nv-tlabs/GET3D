@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Car",
+    "id": "02958343",
+    "scale": 0.9,
+    "directory": "./shapenet/02958343"
+  },
+  {
+    "name": "Chair",
+    "id": "03001627",
+    "scale": 0.7,
+    "directory": "./shapenet/03001627"
+  },
+  {
+    "name": "Motorbike",
+    "id": "03790512",
+    "scale": 0.9,
+    "directory": "./shapenet/03790512"
+  }
+]
