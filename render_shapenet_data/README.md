@@ -9,12 +9,16 @@ This script will help you render ShapeNet and custom datasets that follow ShapeN
 ## Setup
 - Download the ShapeNet V1 or V2 dataset following the [official link](https://shapenet.org/)
 - Make a new folder called shapenet in this directory, and unzip the downloaded file: `mkdir shapenet && unzip SHAPENET_SYNSET_ID.zip -d shapenet`
-- Download Blender following the [official link](https://www.blender.org/), we used
-  Blender **v2.90.0**, we haven't tested on other versions.
-- Install required libraries:
+- Download Blender following the [official link](https://www.blender.org/)
 
-```bash
+## Installing Required Libraries
+You will need the following libraries on Linux:
+```
 apt-get install -y libxi6 libgconf-2-4 libfontconfig1 libxrender1
+```
+
+Blender ships with its own distribution of Python, which you will need to add some libraries to:
+```bash
 cd BLENDER_PATH/2.90/python/bin
 ./python3.7m -m ensurepip
 ./python3.7m -m pip install numpy 
