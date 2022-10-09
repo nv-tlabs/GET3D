@@ -79,7 +79,7 @@ render it.
 #### Clone the gitlab code and necessary files:
 
 ```bash
-cd YOUR_CODE_PARH
+cd YOUR_CODE_PATH
 git clone git@github.com:nv-tlabs/GET3D.git
 cd GET3D; mkdir cache; cd cache
 wget https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/metrics/inception-2015-12-05.pkl
