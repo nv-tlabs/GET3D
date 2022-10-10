@@ -28,7 +28,6 @@ class DMTETSynthesisNetwork(torch.nn.Module):
             img_resolution,  # Output image resolution.
             img_channels,  # Number of color channels.
             device='cuda',
-            data_camera_mode='carla',
             geometry_type='normal',
             tet_res=64,  # Resolution for tetrahedron grid
             render_type='neural_render',  # neural type
@@ -52,7 +51,6 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         self.deformation_multiplier = deformation_multiplier
         self.geometry_type = geometry_type
 
-        self.data_camera_mode = data_camera_mode
         self.n_freq_posenc_geo = 1
         self.render_type = render_type
 
@@ -318,7 +316,7 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         '''
         sample_r = None
         world2cam_matrix, forward_vector, camera_origin, rotation_angle, elevation_angle = sample_camera(
-            self.data_camera_mode, batch_size * n_views, self.device)
+            batch_size * n_views, self.device)
         mv_batch = world2cam_matrix
         campos = camera_origin
         return campos.reshape(batch_size, n_views, 3), mv_batch.reshape(batch_size, n_views, 4, 4), \

@@ -154,12 +154,12 @@ class ImageFolderDataset(Dataset):
             path,  # Path to directory or zip.
             camera_path,  # Path to camera
             resolution=None,  # Ensure specific resolution, None = highest available.
-            data_camera_mode='shapenet_car',
+            manifest_dir='shapenet_car',
             add_camera_cond=False,
-            split='all',
+            split='train',
             **super_kwargs  # Additional arguments for the Dataset base class.
     ):
-        self.data_camera_mode = data_camera_mode
+        self.manifest_dir = manifest_dir
         self._path = path
         self._zipfile = None
         self.root = path
@@ -167,67 +167,32 @@ class ImageFolderDataset(Dataset):
         self.add_camera_cond = add_camera_cond
         root = self._path
         self.camera_root = camera_path
-        if data_camera_mode == 'shapenet_car' or data_camera_mode == 'shapenet_chair' \
-                or data_camera_mode == 'renderpeople' or data_camera_mode == 'shapenet_motorbike' \
-                or data_camera_mode == 'ts_house' \
-                or data_camera_mode == 'ts_animal':
-            print('==> use shapenet dataset')
-            if not os.path.exists(root):
-                print('==> ERROR!!!! THIS SHOULD ONLY HAPPEN WHEN USING INFERENCE')
-                n_img = 1234
-                self._raw_shape = (n_img, 3, resolution, resolution)
-                self.img_size = resolution
-                self._type = 'dir'
-                self._all_fnames = [None for i in range(n_img)]
-                self._image_fnames = self._all_fnames
-                name = os.path.splitext(os.path.basename(path))[0]
-                print(
-                    '==> use image path: %s, num images: %d' % (
-                        self.root, len(self._all_fnames)))
-                super().__init__(name=name, raw_shape=self._raw_shape, **super_kwargs)
-                return
-            folder_list = sorted(os.listdir(root))
-            if data_camera_mode == 'shapenet_chair' or data_camera_mode == 'shapenet_car':
-                if data_camera_mode == 'shapenet_car':
-                    split_name = './3dgan_data_split/shapenet_car/%s.txt' % (split)
-                    if split == 'all':
-                        split_name = './3dgan_data_split/shapenet_car.txt'
-                elif data_camera_mode == 'shapenet_chair':
-                    split_name = './3dgan_data_split/shapenet_chair/%s.txt' % (split)
-                    if split == 'all':
-                        split_name = './3dgan_data_split/shapenet_chair.txt'
-                valid_folder_list = []
-                with open(split_name, 'r') as f:
-                    all_line = f.readlines()
-                    for l in all_line:
-                        valid_folder_list.append(l.strip())
-                valid_folder_list = set(valid_folder_list)
-                useful_folder_list = set(folder_list).intersection(valid_folder_list)
-                folder_list = sorted(list(useful_folder_list))
-            if data_camera_mode == 'ts_animal':
-                split_name = './3dgan_data_split/ts_animals/%s.txt' % (split)
-                print('==> use ts animal split %s' % (split))
-                if split != 'all':
-                    valid_folder_list = []
-                    with open(split_name, 'r') as f:
-                        all_line = f.readlines()
-                        for l in all_line:
-                            valid_folder_list.append(l.strip())
-                    valid_folder_list = set(valid_folder_list)
-                    useful_folder_list = set(folder_list).intersection(valid_folder_list)
-                    folder_list = sorted(list(useful_folder_list))
-            elif data_camera_mode == 'shapenet_motorbike':
-                split_name = './3dgan_data_split/shapenet_motorbike/%s.txt' % (split)
-                print('==> use ts shapenet motorbike split %s' % (split))
-                if split != 'all':
-                    valid_folder_list = []
-                    with open(split_name, 'r') as f:
-                        all_line = f.readlines()
-                        for l in all_line:
-                            valid_folder_list.append(l.strip())
-                    valid_folder_list = set(valid_folder_list)
-                    useful_folder_list = set(folder_list).intersection(valid_folder_list)
-                    folder_list = sorted(list(useful_folder_list))
+
+        if not os.path.exists(root):
+            print('==> WARNING: Root path does not exist. If you are running inference this is OK: %s' % root)
+            n_img = 1234
+            self._raw_shape = (n_img, 3, resolution, resolution)
+            self.img_size = resolution
+            self._type = 'dir'
+            self._all_fnames = [None for i in range(n_img)]
+            self._image_fnames = self._all_fnames
+            name = os.path.splitext(os.path.basename(path))[0]
+            print(
+                '==> use image path: %s, num images: %d' % (
+                    self.root, len(self._all_fnames)))
+            super().__init__(name=name, raw_shape=self._raw_shape, **super_kwargs)
+            return
+        folder_list = sorted(os.listdir(root))
+        if manifest_dir.includes('shapenet'):
+            split_name = './3dgan_data_split/' + manifest_dir + '/%s.txt' % (split)
+            valid_folder_list = []
+            with open(split_name, 'r') as f:
+                all_line = f.readlines()
+                for l in all_line:
+                    valid_folder_list.append(l.strip())
+            valid_folder_list = set(valid_folder_list)
+            useful_folder_list = set(folder_list).intersection(valid_folder_list)
+            folder_list = sorted(list(useful_folder_list))
             print('==> use shapenet folder number %s' % (len(folder_list)))
             folder_list = [os.path.join(root, f) for f in folder_list]
             all_img_list = []
@@ -242,17 +207,15 @@ class ImageFolderDataset(Dataset):
             self.img_list = all_img_list
             self.mask_list = all_mask_list
 
-        else:
-            raise NotImplementedError
-        self.img_size = resolution
-        self._type = 'dir'
-        self._all_fnames = self.img_list
-        self._image_fnames = self._all_fnames
-        name = os.path.splitext(os.path.basename(self._path))[0]
-        print(
-            '==> use image path: %s, num images: %d' % (self.root, len(self._all_fnames)))
-        raw_shape = [len(self._image_fnames)] + list(self._load_raw_image(0).shape)
-        super().__init__(name=name, raw_shape=raw_shape, **super_kwargs)
+            self.img_size = resolution
+            self._type = 'dir'
+            self._all_fnames = self.img_list
+            self._image_fnames = self._all_fnames
+            name = os.path.splitext(os.path.basename(self._path))[0]
+            print(
+                '==> use image path: %s, num images: %d' % (self.root, len(self._all_fnames)))
+            raw_shape = [len(self._image_fnames)] + list(self._load_raw_image(0).shape)
+            super().__init__(name=name, raw_shape=raw_shape, **super_kwargs)
 
     @staticmethod
     def _file_ext(fname):
@@ -283,31 +246,22 @@ class ImageFolderDataset(Dataset):
 
     def __getitem__(self, idx):
         fname = self._image_fnames[self._raw_idx[idx]]
-        if self.data_camera_mode == 'shapenet_car' or self.data_camera_mode == 'shapenet_chair' \
-                or self.data_camera_mode == 'renderpeople' \
-                or self.data_camera_mode == 'shapenet_motorbike' or self.data_camera_mode == 'ts_house' or self.data_camera_mode == 'ts_animal' \
-                :
-            ori_img = cv2.imread(fname, cv2.IMREAD_UNCHANGED)
-            img = ori_img[:, :, :3][..., ::-1]
-            mask = ori_img[:, :, 3:4]
-            condinfo = np.zeros(2)
-            fname_list = fname.split('/')
-            img_idx = int(fname_list[-1].split('.')[0])
-            obj_idx = fname_list[-2]
-            syn_idx = fname_list[-3]
+        ori_img = cv2.imread(fname, cv2.IMREAD_UNCHANGED)
+        img = ori_img[:, :, :3][..., ::-1]
+        mask = ori_img[:, :, 3:4]
+        condinfo = np.zeros(2)
+        fname_list = fname.split('/')
+        img_idx = int(fname_list[-1].split('.')[0])
+        obj_idx = fname_list[-2]
+        syn_idx = fname_list[-3]
 
-            if self.data_camera_mode == 'shapenet_car' or self.data_camera_mode == 'shapenet_chair' \
-                    or self.data_camera_mode == 'renderpeople' or self.data_camera_mode == 'shapenet_motorbike' \
-                    or self.data_camera_mode == 'ts_house' or self.data_camera_mode == 'ts_animal':
-                if not os.path.exists(os.path.join(self.camera_root, syn_idx, obj_idx, 'rotation.npy')):
-                    print('==> not found camera root')
-                else:
-                    rotation_camera = np.load(os.path.join(self.camera_root, syn_idx, obj_idx, 'rotation.npy'))
-                    elevation_camera = np.load(os.path.join(self.camera_root, syn_idx, obj_idx, 'elevation.npy'))
-                    condinfo[0] = rotation_camera[img_idx] / 180 * np.pi
-                    condinfo[1] = (90 - elevation_camera[img_idx]) / 180.0 * np.pi
+        if not os.path.exists(os.path.join(self.camera_root, syn_idx, obj_idx, 'rotation.npy')):
+            print('==> not found camera root')
         else:
-            raise NotImplementedError
+            rotation_camera = np.load(os.path.join(self.camera_root, syn_idx, obj_idx, 'rotation.npy'))
+            elevation_camera = np.load(os.path.join(self.camera_root, syn_idx, obj_idx, 'elevation.npy'))
+            condinfo[0] = rotation_camera[img_idx] / 180 * np.pi
+            condinfo[1] = (90 - elevation_camera[img_idx]) / 180.0 * np.pi
 
         resize_img = cv2.resize(img, (self.img_size, self.img_size), interpolation=cv2.INTER_LINEAR)
         if not mask is None:
