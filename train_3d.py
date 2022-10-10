@@ -35,6 +35,7 @@ def subprocess_fn(rank, c, temp_dir):
             init_method = f'file://{init_file}'
             torch.distributed.init_process_group(
                 backend='nccl', init_method=init_method, rank=rank, world_size=c.num_gpus)
+
     # Init torch_utils.
     sync_device = torch.device('cuda', rank) if c.num_gpus > 1 else None
     training_stats.init_multiprocessing(rank=rank, sync_device=sync_device)
@@ -95,6 +96,7 @@ def launch_training(c, desc, outdir, dry_run):
         json.dump(c, f, indent=2)
 
     # Launch processes.
+    print('Launching processes...')
     torch.multiprocessing.set_start_method('spawn', force=True)
     with tempfile.TemporaryDirectory() as temp_dir:
         if c.num_gpus == 1:

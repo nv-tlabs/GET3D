@@ -207,15 +207,15 @@ class ImageFolderDataset(Dataset):
             self.img_list = all_img_list
             self.mask_list = all_mask_list
 
-            self.img_size = resolution
-            self._type = 'dir'
-            self._all_fnames = self.img_list
-            self._image_fnames = self._all_fnames
-            name = os.path.splitext(os.path.basename(self._path))[0]
-            print(
-                '==> use image path: %s, num images: %d' % (self.root, len(self._all_fnames)))
-            raw_shape = [len(self._image_fnames)] + list(self._load_raw_image(0).shape)
-            super().__init__(name=name, raw_shape=raw_shape, **super_kwargs)
+        self.img_size = resolution
+        self._type = 'dir'
+        self._all_fnames = self.img_list
+        self._image_fnames = self._all_fnames
+        name = os.path.splitext(os.path.basename(self._path))[0]
+        print(
+            '==> use image path: %s, num images: %d' % (self.root, len(self._all_fnames)))
+        raw_shape = [len(self._image_fnames)] + list(self._load_raw_image(0).shape)
+        super().__init__(name=name, raw_shape=raw_shape, **super_kwargs)
 
     @staticmethod
     def _file_ext(fname):
