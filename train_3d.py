@@ -249,7 +249,7 @@ def main(**kwargs):
 
     c.G_kwargs.render_type = opts.render_type
     c.G_kwargs.use_tri_plane = opts.use_tri_plane
-    c.D_kwargs.manifest_dir = opts.manifest_dir
+    # c.D_kwargs.manifest_dir = opts.manifest_dir
     c.D_kwargs.add_camera_cond = opts.add_camera_cond
 
     c.G_kwargs.tet_res = opts.tet_res
@@ -259,7 +259,7 @@ def main(**kwargs):
     c.batch_size = opts.batch
     c.batch_gpu = opts.batch_gpu or opts.batch // opts.gpus
     # c.G_kwargs.geo_pos_enc = opts.geo_pos_enc
-    c.G_kwargs.manifest_dir = opts.manifest_dir
+    # c.G_kwargs.manifest_dir = opts.manifest_dir
     c.G_kwargs.channel_base = c.D_kwargs.channel_base = opts.cbase
     c.G_kwargs.channel_max = c.D_kwargs.channel_max = opts.cmax
 
