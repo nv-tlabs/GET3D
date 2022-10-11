@@ -183,29 +183,28 @@ class ImageFolderDataset(Dataset):
             super().__init__(name=name, raw_shape=self._raw_shape, **super_kwargs)
             return
         folder_list = sorted(os.listdir(root))
-        if manifest_dir.includes('shapenet'):
-            split_name = './3dgan_data_split/' + manifest_dir + '/%s.txt' % (split)
-            valid_folder_list = []
-            with open(split_name, 'r') as f:
-                all_line = f.readlines()
-                for l in all_line:
-                    valid_folder_list.append(l.strip())
-            valid_folder_list = set(valid_folder_list)
-            useful_folder_list = set(folder_list).intersection(valid_folder_list)
-            folder_list = sorted(list(useful_folder_list))
-            print('==> use shapenet folder number %s' % (len(folder_list)))
-            folder_list = [os.path.join(root, f) for f in folder_list]
-            all_img_list = []
-            all_mask_list = []
+        split_name = './3dgan_data_split/' + manifest_dir + '/%s.txt' % (split)
+        valid_folder_list = []
+        with open(split_name, 'r') as f:
+            all_line = f.readlines()
+            for l in all_line:
+                valid_folder_list.append(l.strip())
+        valid_folder_list = set(valid_folder_list)
+        useful_folder_list = set(folder_list).intersection(valid_folder_list)
+        folder_list = sorted(list(useful_folder_list))
+        print('==> use shapenet folder number %s' % (len(folder_list)))
+        folder_list = [os.path.join(root, f) for f in folder_list]
+        all_img_list = []
+        all_mask_list = []
 
-            for folder in folder_list:
-                rgb_list = sorted(os.listdir(folder))
-                rgb_file_name_list = [os.path.join(folder, n) for n in rgb_list]
-                all_img_list.extend(rgb_file_name_list)
-                all_mask_list.extend(rgb_list)
+        for folder in folder_list:
+            rgb_list = sorted(os.listdir(folder))
+            rgb_file_name_list = [os.path.join(folder, n) for n in rgb_list]
+            all_img_list.extend(rgb_file_name_list)
+            all_mask_list.extend(rgb_list)
 
-            self.img_list = all_img_list
-            self.mask_list = all_mask_list
+        self.img_list = all_img_list
+        self.mask_list = all_mask_list
 
         self.img_size = resolution
         self._type = 'dir'
