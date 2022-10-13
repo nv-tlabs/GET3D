@@ -526,7 +526,6 @@ class Discriminator(torch.nn.Module):
             conv_clamp=256,  # Clamp the output of convolution layers to +-X, None = disable clamping.
             cmap_dim=None,  # Dimensionality of mapped conditioning label, None = default.
             add_camera_cond=False,  # whether add camera for conditioning
-            data_camera_mode='',  #
             device='cuda',
             block_kwargs={},  # Arguments for DiscriminatorBlock.
             mapping_kwargs={},  # Arguments for MappingNetwork.
@@ -534,7 +533,6 @@ class Discriminator(torch.nn.Module):
     ):
         super().__init__()
 
-        self.data_camera_mode = data_camera_mode
         self.conditional_dim = c_dim
         self.c_dim = c_dim
         self.add_camera_cond = add_camera_cond
@@ -549,15 +547,9 @@ class Discriminator(torch.nn.Module):
 
         # We will compute the positional encoding for the camera
         if self.add_camera_cond:
-            if self.data_camera_mode == 'shapenet_car' \
-                    or self.data_camera_mode == 'shapenet_chair' or self.data_camera_mode == 'shapenet_motorbike' \
-                    or self.data_camera_mode == 'renderpeople' or self.data_camera_mode == 'ts_house' \
-                    or self.data_camera_mode == 'ts_animal':
-                self.camera_dim = 2
-                self.camera_dim_enc = 2 + 2 * 2 * 3
+            self.camera_dim = 2
+            self.camera_dim_enc = 2 + 2 * 2 * 3
 
-            else:
-                raise NotImplementedError
             self.c_dim = self.camera_dim_enc + self.c_dim
 
         if cmap_dim is None:
@@ -609,19 +601,13 @@ class Discriminator(torch.nn.Module):
 
     def pos_enc_angle(self, camera_angle):
         # Encode the camera angles into cos/sin
-        if self.data_camera_mode == 'shapenet_car' \
-                or self.data_camera_mode == 'shapenet_chair' or self.data_camera_mode == 'shapenet_motorbike' \
-                or self.data_camera_mode == 'renderpeople' or self.data_camera_mode == 'ts_house' \
-                or self.data_camera_mode == 'ts_animal':
-            L = 3
-            p_transformed = torch.cat(
-                [torch.cat(
-                    [torch.sin((2 ** i) * camera_angle),
-                     torch.cos((2 ** i) * camera_angle)],
-                    dim=-1) for i in range(L)], dim=-1)
-            p_transformed = torch.cat([p_transformed, camera_angle], dim=-1)
-        else:
-            raise NotImplementedError
+        L = 3
+        p_transformed = torch.cat(
+            [torch.cat(
+                [torch.sin((2 ** i) * camera_angle),
+                    torch.cos((2 ** i) * camera_angle)],
+                dim=-1) for i in range(L)], dim=-1)
+        p_transformed = torch.cat([p_transformed, camera_angle], dim=-1)
         return p_transformed
 
     def forward(self, img, c, update_emas=False, alpha=1.0, mask_pyramid=None, **block_kwargs):

@@ -94,21 +94,20 @@ export PYTHONPATH=$PWD:$PYTHONPATH
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 ```
 
-- Train on the unified generator on cars, motorbikes or chair (Improved generator in
-  Appendix):
+- Train the unified generator on cars, motorbikes or chair (Improved generator in Appendix):
 
 ```bash
-python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=40 --data_camera_mode shapenet_car  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0
-python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=80 --data_camera_mode shapenet_motorbike  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0
-python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=400 --data_camera_mode shapenet_chair  --dmtet_scale 0.8  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0
+python train_3d.py --outdir=./logs --data=./shapenet/img/02958343 --camera_path=./shapenet/camera --gpus=8 --batch=32 --gamma=40 --manifest_dir shapenet_car  --dmtet_scale 1.0 --one_3d_generator 1  --fp32 0
+python train_3d.py --outdir=./logs --data=./shapenet/img/03790512 --camera_path=./shapenet/camera --gpus=8 --batch=32 --gamma=80 --manifest_dir shapenet_motorbike  --dmtet_scale 1.0 --one_3d_generator 1  --fp32 0
+python train_3d.py --outdir=./logs --data=./shapenet/img/03001627 --camera_path=./shapenet/camera --gpus=8 --batch=32 --gamma=400 --manifest_dir shapenet_chair  --dmtet_scale 0.8 --one_3d_generator 1  --fp32 0
 ```
 
-- If want to train on seperate generators (main Figure in the paper):
+- If want to train on separate generators (main Figure in the paper):
 
 ```bash
-python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=40 --data_camera_mode shapenet_car  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 0
-python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=80 --data_camera_mode shapenet_motorbike  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 0
-python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=3200 --data_camera_mode shapenet_chair  --dmtet_scale 0.8  --use_shapenet_split 1  --one_3d_generator 0
+python train_3d.py --outdir=./logs --data=./shapenet/img/02958343 --camera_path=./shapenet/camera --gpus=8 --batch=32 --gamma=40 --manifest_dir shapenet_car  --dmtet_scale 1.0 --one_3d_generator 0
+python train_3d.py --outdir=./logs --data=./shapenet/img/03790512 --camera_path=./shapenet/camera --gpus=8 --batch=32 --gamma=80 --manifest_dir shapenet_motorbike  --dmtet_scale 1.0 --one_3d_generator 0
+python train_3d.py --outdir=./logs --data=./shapenet/img/03001627 --camera_path=./shapenet/camera --gpus=8 --batch=32 --gamma=400 --manifest_dir shapenet_chair  --dmtet_scale 0.8 --one_3d_generator 0
 ```
 
 If want to debug the model first, reduce the number of gpus to 1 and batch size to 4 via:
@@ -125,9 +124,9 @@ If want to debug the model first, reduce the number of gpus to 1 and batch size 
 - Inference could operate on a single GPU with 16 GB memory.
 
 ```bash
-python train_3d.py --outdir=save_inference_results/shapenet_car  --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_car  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
-python train_3d.py --outdir=save_inference_results/shapenet_chair  --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_chair  --dmtet_scale 0.8  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
-python train_3d.py --outdir=save_inference_results/shapenet_motorbike  --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_motorbike  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
+python train_3d.py --outdir=save_inference_results/shapenet_car  --gpus=1 --batch=4 --gamma=40 --manifest_dir shapenet_car  --dmtet_scale 1.0 --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
+python train_3d.py --outdir=save_inference_results/shapenet_chair  --gpus=1 --batch=4 --gamma=40 --manifest_dir shapenet_chair  --dmtet_scale 0.8 --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
+python train_3d.py --outdir=save_inference_results/shapenet_motorbike  --gpus=1 --batch=4 --gamma=40 --manifest_dir shapenet_motorbike  --dmtet_scale 1.0 --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
 ```
 
 - To generate mesh with textures, add one option to the inference

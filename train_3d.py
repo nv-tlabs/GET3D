@@ -108,24 +108,14 @@ def launch_training(c, desc, outdir, dry_run):
 # ----------------------------------------------------------------------------
 def init_dataset_kwargs(data, opt=None):
     try:
-        if opt.use_shapenet_split:
-            dataset_kwargs = dnnlib.EasyDict(
-                class_name='training.dataset.ImageFolderDataset',
-                path=data, use_labels=True, max_size=None, xflip=False,
-                resolution=opt.img_res,
-                data_camera_mode=opt.data_camera_mode,
-                add_camera_cond=opt.add_camera_cond,
-                camera_path=opt.camera_path,
-                split='test' if opt.inference_vis else 'train',
-            )
-        else:
-            dataset_kwargs = dnnlib.EasyDict(
-                class_name='training.dataset.ImageFolderDataset',
-                path=data, use_labels=True, max_size=None, xflip=False, resolution=opt.img_res,
-                data_camera_mode=opt.data_camera_mode,
-                add_camera_cond=opt.add_camera_cond,
-                camera_path=opt.camera_path,
-            )
+        dataset_kwargs = dnnlib.EasyDict(
+            class_name='training.dataset.ImageFolderDataset',
+            path=data, use_labels=True, max_size=None, xflip=False, resolution=opt.img_res,
+            manifest_dir=opt.manifest_dir,
+            add_camera_cond=opt.add_camera_cond,
+            camera_path=opt.camera_path,
+            split='test' if opt.inference_vis else 'train',
+        )
         dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs)  # Subclass of training.dataset.Dataset.
         dataset_kwargs.camera_path = opt.camera_path
         dataset_kwargs.resolution = dataset_obj.resolution  # Be explicit about resolution.
@@ -168,8 +158,7 @@ def parse_comma_separated_list(s):
 @click.option('--data', help='Path to the Training data Images', metavar='[DIR]', type=str, default='./tmp')
 @click.option('--camera_path', help='Path to the camera root', metavar='[DIR]', type=str, default='./tmp')
 @click.option('--img_res', help='The resolution of image', metavar='INT', type=click.IntRange(min=1), default=1024)
-@click.option('--data_camera_mode', help='The type of dataset we are using', type=str, default='shapenet_car', show_default=True)
-@click.option('--use_shapenet_split', help='whether use the training split or all the data for training', metavar='BOOL', type=bool, default=False, show_default=False)
+@click.option('--manifest_dir', help='Directory containing train.txt, test.txt and val.txt', type=str, default='shapenet_car', show_default=True)
 ### Configs for 3D generator##########
 @click.option('--use_style_mixing', help='whether use style mixing for generation during inference', metavar='BOOL', type=bool, default=True, show_default=False)
 @click.option('--one_3d_generator', help='whether we detach the gradient for empty object', metavar='BOOL', type=bool, default=True, show_default=True)
@@ -240,8 +229,8 @@ def main(**kwargs):
     c.training_set_kwargs, dataset_name = init_dataset_kwargs(data=opts.data, opt=opts)
     if opts.cond and not c.training_set_kwargs.use_labels:
         raise click.ClickException('--cond=True requires labels specified in dataset.json')
-    c.training_set_kwargs.split = 'train' if opts.use_shapenet_split else 'all'
-    if opts.use_shapenet_split and opts.inference_vis:
+    c.training_set_kwargs.split = 'train'
+    if opts.inference_vis:
         c.training_set_kwargs.split = 'test'
     c.training_set_kwargs.use_labels = opts.cond
     c.training_set_kwargs.xflip = False
@@ -260,7 +249,7 @@ def main(**kwargs):
 
     c.G_kwargs.render_type = opts.render_type
     c.G_kwargs.use_tri_plane = opts.use_tri_plane
-    c.D_kwargs.data_camera_mode = opts.data_camera_mode
+    # c.D_kwargs.manifest_dir = opts.manifest_dir
     c.D_kwargs.add_camera_cond = opts.add_camera_cond
 
     c.G_kwargs.tet_res = opts.tet_res
@@ -270,7 +259,7 @@ def main(**kwargs):
     c.batch_size = opts.batch
     c.batch_gpu = opts.batch_gpu or opts.batch // opts.gpus
     # c.G_kwargs.geo_pos_enc = opts.geo_pos_enc
-    c.G_kwargs.data_camera_mode = opts.data_camera_mode
+    # c.G_kwargs.manifest_dir = opts.manifest_dir
     c.G_kwargs.channel_base = c.D_kwargs.channel_base = opts.cbase
     c.G_kwargs.channel_max = c.D_kwargs.channel_max = opts.cmax
 

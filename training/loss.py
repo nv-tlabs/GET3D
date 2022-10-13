@@ -105,15 +105,7 @@ class StyleGAN2Loss(Loss):
                     gen_z, gen_c, return_shape=True
                 )
 
-                camera_condition = None
-                if self.G.synthesis.data_camera_mode == 'shapenet_car' or self.G.synthesis.data_camera_mode == 'shapenet_chair' \
-                        or self.G.synthesis.data_camera_mode == 'shapenet_motorbike' or self.G.synthesis.data_camera_mode == 'renderpeople' or \
-                        self.G.synthesis.data_camera_mode == 'shapenet_plant' or self.G.synthesis.data_camera_mode == 'shapenet_vase' or \
-                        self.G.synthesis.data_camera_mode == 'ts_house' or self.G.synthesis.data_camera_mode == 'ts_animal' or \
-                        self.G.synthesis.data_camera_mode == 'all_shapenet':
-                    camera_condition = torch.cat((gen_camera[-2], gen_camera[-1]), dim=-1)
-                else:
-                    assert NotImplementedError
+                camera_condition = torch.cat((gen_camera[-2], gen_camera[-1]), dim=-1)
                 # Send to discriminator
                 gen_logits = self.run_D(gen_img, camera_condition, mask_pyramid=mask_pyramid)
                 gen_logits, gen_logits_mask = gen_logits
@@ -150,14 +142,8 @@ class StyleGAN2Loss(Loss):
                 # First generate the rendered image of generated 3D shapes
                 gen_img, _gen_ws, gen_camera, mask_pyramid, render_return_value = self.run_G(
                     gen_z, gen_c, update_emas=True)
-                if self.G.synthesis.data_camera_mode == 'shapenet_car' or self.G.synthesis.data_camera_mode == 'shapenet_chair' \
-                        or self.G.synthesis.data_camera_mode == 'shapenet_motorbike' or self.G.synthesis.data_camera_mode == 'renderpeople' or \
-                        self.G.synthesis.data_camera_mode == 'shapenet_plant' or self.G.synthesis.data_camera_mode == 'shapenet_vase' or \
-                        self.G.synthesis.data_camera_mode == 'ts_house' or self.G.synthesis.data_camera_mode == 'ts_animal' or \
-                        self.G.synthesis.data_camera_mode == 'all_shapenet':
-                    camera_condition = torch.cat((gen_camera[-2], gen_camera[-1]), dim=-1)
-                else:
-                    camera_condition = None
+
+                camera_condition = torch.cat((gen_camera[-2], gen_camera[-1]), dim=-1)
 
                 # Send it to discriminator
                 gen_logits = self.run_D(

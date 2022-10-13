@@ -32,38 +32,17 @@ def create_camera_from_angle(phi, theta, sample_r, device='cuda'):
     return world2cam_matrix, forward_vector, camera_origin, phi, theta
 
 
-def sample_camera(camera_data_mode, n, device='cuda'):
+def sample_camera(n, device='cuda'):
     # We use this function to sample the camera for training the generator
     # When we're rendering the dataset, the camera is random sampled from
     # a uniform distribution (see `render_shapenet_data/render_shapenet.py`
     # for details of camera distribution)
-    if camera_data_mode == 'shapenet_car' or camera_data_mode == 'shapenet_chair' or camera_data_mode == 'shapenet_motorbike' \
-            or camera_data_mode == 'ts_house':
-        horizontal_stddev = math.pi  # here means horizontal rotation
-        vertical_stddev = (math.pi / 180) * 15
-        horizontal_mean = math.pi  ######## [horizon range [0, 2pi]]
-        vertical_mean = (math.pi / 180) * 75
-        mode = 'uniform'
-        radius_range = [1.2, 1.2]
-    elif camera_data_mode == 'ts_animal':
-        horizontal_stddev = math.pi  # here means horizontal rotation
-        vertical_stddev = (math.pi / 180) * (45.0 / 2.0)
-
-        horizontal_mean = math.pi  ######## [horizon range [0, 2pi]]
-        vertical_mean = (math.pi / 180) * ((90.0 + 90.0 - 45.0) / 2.0)
-        mode = 'uniform'
-        radius_range = [1.2, 1.2]
-    elif camera_data_mode == 'renderpeople':
-        horizontal_stddev = math.pi  # here means horizontal rotation
-        vertical_stddev = (math.pi / 180) * 10
-
-        horizontal_mean = math.pi  ######## [horizon range [0, 2pi]]
-        vertical_mean = (math.pi / 180) * 80
-        mode = 'uniform'
-        radius_range = [1.2, 1.2]
-
-    else:
-        raise NotImplementedError
+    horizontal_stddev = math.pi  # here means horizontal rotation
+    vertical_stddev = (math.pi / 180) * 15
+    horizontal_mean = math.pi  ######## [horizon range [0, 2pi]]
+    vertical_mean = (math.pi / 180) * 80
+    mode = 'uniform'
+    radius_range = [1.2, 1.2]
 
     camera_origin, rotation_angle, elevation_angle = sample_camera_positions(
         device, n=n, r=radius_range,
