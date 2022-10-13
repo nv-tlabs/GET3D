@@ -36,13 +36,14 @@ form: [NVIDIA Research Licensing](https://www.nvidia.com/en-us/research/inquirie
 
 ## News
 
+- 2022-10-13: Pretrained model on Shapenet released! Check more details [here](./pretrained_model)
 - 2022-09-29: Code released!
 - 2022-09-22: Code will be uploaded next week!
 
 ## Requirements
 
 * We recommend Linux for performance and compatibility reasons.
-* 8 high-end NVIDIA GPUs. We have done all testing and development using V100 or A100
+* 1 &ndash; 8 high-end NVIDIA GPUs. We have done all testing and development using V100 or A100
   GPUs.
 * 64-bit Python 3.8 and PyTorch 1.9.0. See https://pytorch.org for PyTorch install
   instructions.
@@ -120,6 +121,7 @@ If want to debug the model first, reduce the number of gpus to 1 and batch size 
 
 ### Inference on a pretrained model for visualization
 
+- Download pretrained model from [here](https://drive.google.com/drive/folders/1oJ-FmyVYjIwBZKDAQ4N1EEcE9dJjumdW?usp=sharing).
 - Inference could operate on a single GPU with 16 GB memory.
 
 ```bash

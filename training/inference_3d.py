@@ -76,7 +76,7 @@ def inference(
         G.load_state_dict(model_state_dict['G'], strict=True)
         G_ema.load_state_dict(model_state_dict['G_ema'], strict=True)
         D.load_state_dict(model_state_dict['D'], strict=True)
-    grid_size = (10, 10)
+    grid_size = (5, 5)
     n_shape = grid_size[0] * grid_size[1]
     grid_z = torch.randn([n_shape, G.z_dim], device=device).split(1)  # random code for geometry
     grid_tex_z = torch.randn([n_shape, G.z_dim], device=device).split(1)  # random code for texture
