@@ -34,6 +34,8 @@ parser.add_argument(
 parser.add_argument(
     '--quiet_mode', type=bool, default=1,
     help='Route output of console to log file')
+parser.add_argument(
+    '--headless', action='store_true', default=False, help='Run blender in headless mode')
 args = parser.parse_args()
 
 engine = args.engine
@@ -43,6 +45,10 @@ dataset_list = args.dataset_list
 blender_root = args.blender_root
 shapenet_version = args.shapenet_version
 num_views = args.num_views
+
+if args.headless and args.engine == 'EEVEE':
+    from pyvirtualdisplay import Display
+    Display().start()
 
 # check if dataset_list exists, throw error if not
 if not os.path.exists(dataset_list):
