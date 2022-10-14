@@ -8,6 +8,7 @@
 
 import os
 import argparse
+import time
 
 parser = argparse.ArgumentParser(description='Renders given obj file by rotation a camera around it.')
 parser.add_argument(
@@ -35,10 +36,15 @@ scale_list = [
     0.7,
     0.9
 ]
+
 for synset, obj_scale in zip(synset_list, scale_list):
     file_list = sorted(os.listdir(os.path.join(dataset_folder, synset)))
     for idx, file in enumerate(file_list):
+        start_time = time.time()
         render_cmd = '%s -b -P render_shapenet.py -- --output %s %s  --scale %f --views 24 --resolution 1024 >> tmp.out' % (
             blender_root, save_folder, os.path.join(dataset_folder, synset, file, 'model.obj'), obj_scale
         )
         os.system(render_cmd)
+
+        end_time = time.time()
+        print('Time for rendering %d models: %f' % (1, end_time - start_time))
