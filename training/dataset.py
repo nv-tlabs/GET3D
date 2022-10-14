@@ -235,6 +235,7 @@ class ImageFolderDataset(Dataset):
 
             for folder in folder_list:
                 rgb_list = sorted(os.listdir(folder))
+                rgb_list = [n for n in rgb_list if n.endswith('.png') or n.endswith('.jpg')]
                 rgb_file_name_list = [os.path.join(folder, n) for n in rgb_list]
                 all_img_list.extend(rgb_file_name_list)
                 all_mask_list.extend(rgb_list)
