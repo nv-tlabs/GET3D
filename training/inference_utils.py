@@ -247,7 +247,7 @@ def save_textured_mesh_for_inference(
                     all_uvs.data.cpu().numpy(),
                     mesh_f.data.cpu().numpy(),
                     all_mesh_tex_idx.data.cpu().numpy(),
-                    os.path.join(mesh_dir, '%07d.obj' % (save_mesh_idx))
+                    os.path.join(mesh_dir, 'mesh.obj')
                 )
                 lo, hi = (-1, 1)
                 img = np.asarray(tex_map.permute(1, 2, 0).data.cpu().numpy(), dtype=np.float32)
@@ -260,7 +260,7 @@ def save_textured_mesh_for_inference(
                 img = img * (1 - mask) + dilate_img * mask
                 img = img.clip(0, 255).astype(np.uint8)
                 PIL.Image.fromarray(np.ascontiguousarray(img[::-1, :, :]), 'RGB').save(
-                    os.path.join(mesh_dir, '%07d.png' % (save_mesh_idx)))
+                    os.path.join(mesh_dir, 'albedo.png'))
                 save_mesh_idx += 1
 
 

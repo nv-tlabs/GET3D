@@ -77,23 +77,23 @@ def inference(
         G.load_state_dict(model_state_dict['G'], strict=True)
         G_ema.load_state_dict(model_state_dict['G_ema'], strict=True)
         # D.load_state_dict(model_state_dict['D'], strict=True)
-    grid_size = (5, 5)
+    grid_size = (1, 1)
     n_shape = grid_size[0] * grid_size[1]
     grid_z = torch.randn([n_shape, G.z_dim], device=device).split(1)  # random code for geometry
     grid_tex_z = torch.randn([n_shape, G.z_dim], device=device).split(1)  # random code for texture
     grid_c = torch.ones(n_shape, device=device).split(1)
 
     print('==> generate ')
-    save_visualization(
-        G_ema, grid_z, grid_c, run_dir, 0, grid_size, 0,
-        save_all=False,
-        grid_tex_z=grid_tex_z
-    )
+    # save_visualization(
+    #     G_ema, grid_z, grid_c, run_dir, 0, grid_size, 0,
+    #     save_all=False,
+    #     grid_tex_z=grid_tex_z
+    # )
 
     if inference_to_generate_textured_mesh:
         print('==> generate inference 3d shapes with texture')
         save_textured_mesh_for_inference(
-            G_ema, grid_z, grid_c, run_dir, save_mesh_dir='texture_mesh_for_inference',
+            G_ema, grid_z, grid_c, run_dir, save_mesh_dir="",
             c_to_compute_w_avg=None, grid_tex_z=grid_tex_z)
 
     if inference_save_interpolation:
