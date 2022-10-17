@@ -56,7 +56,7 @@ class NeuralRender(Renderer):
     ):
         assert not hierarchical_mask
         if self.ctx is None:
-            self.ctx = dr.RasterizeGLContext(device=self.device)
+            self.ctx = dr.RasterizeCudaContext(device=self.device)
 
         mtx_in = torch.tensor(camera_mv_bx4x4, dtype=torch.float32, device=device) if not torch.is_tensor(camera_mv_bx4x4) else camera_mv_bx4x4
         v_pos = xfm_points(mesh_v_pos_bxnx3, mtx_in)  # Rotate it to camera coordinates

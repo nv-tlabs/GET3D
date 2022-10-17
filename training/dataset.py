@@ -289,6 +289,7 @@ class ImageFolderDataset(Dataset):
                 or self.data_camera_mode == 'shapenet_motorbike' or self.data_camera_mode == 'ts_house' or self.data_camera_mode == 'ts_animal' \
                 :
             ori_img = cv2.imread(fname, cv2.IMREAD_UNCHANGED)
+            assert ori_img is not None, f'{fname}. No such img.'
             img = ori_img[:, :, :3][..., ::-1]
             mask = ori_img[:, :, 3:4]
             condinfo = np.zeros(2)
