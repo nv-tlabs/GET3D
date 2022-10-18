@@ -382,7 +382,7 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         all_gb_pose = []
         all_uv_mask = []
         if self.dmtet_geometry.renderer.ctx is None:
-            self.dmtet_geometry.renderer.ctx = dr.RasterizeGLContext(device=self.device)
+            self.dmtet_geometry.renderer.ctx = dr.RasterizeCudaContext(device=self.device)
         for v, f in zip(mesh_v, mesh_f):
             uvs, mesh_tex_idx, gb_pos, mask = xatlas_uvmap(
                 self.dmtet_geometry.renderer.ctx, v, f, resolution=texture_resolution)

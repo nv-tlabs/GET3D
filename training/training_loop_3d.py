@@ -116,7 +116,7 @@ def training_loop(
     if num_gpus > 1:
         torch.distributed.barrier()
     start_time = time.time()
-    device = torch.device('cuda', rank)
+    device = torch.device('cuda')
     np.random.seed(random_seed * num_gpus + rank)
     torch.manual_seed(random_seed * num_gpus + rank)
     torch.backends.cudnn.enabled = True
@@ -380,7 +380,7 @@ def training_loop(
             snapshot_data = dict(
                 G=G, D=D, G_ema=G_ema)
             for key, value in snapshot_data.items():
-                if isinstance(value, torch.nn.Module) and not isinstance(value, dr.ops.RasterizeGLContext):
+                if isinstance(value, torch.nn.Module) and not isinstance(value, dr.ops.RasterizeCudaContext):
                     if num_gpus > 1:
                         misc.check_ddp_consistency(value, ignore_regex=r'.*\.[^.]+_(avg|ema|ctx)')
                         for param in misc.params_and_buffers(value):
@@ -406,7 +406,9 @@ def training_loop(
                     with torch.no_grad():
                         result_dict = metric_main.calc_metric(
                             metric=metric, G=snapshot_data['G_ema'],
-                            dataset_kwargs=training_set_kwargs, num_gpus=num_gpus, rank=rank, device=device)
+                            dataset_kwargs=training_set_kwargs, num_gpus=num_gpus,
+                            batch_size=batch_size,
+                            rank=rank, device='cuda')
                     if rank == 0:
                         metric_main.report_metric(result_dict, run_dir=run_dir, snapshot_pkl=snapshot_pkl)
                     stats_metrics.update(result_dict.results)
