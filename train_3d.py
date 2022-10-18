@@ -24,6 +24,7 @@ from training import inference_3d
 def subprocess_fn(local_rank, c, temp_dir):
     dnnlib.util.Logger(file_name=os.path.join(c.run_dir, 'log.txt'), file_mode='a', should_flush=True)
 
+    rank = 0
     # Init torch.distributed.
     if c.num_gpus > 1:
         rank = int(os.environ['RANK'])  # 当前机器编号
