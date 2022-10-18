@@ -403,6 +403,11 @@ class DMTetGeometry(Geometry):
         self.args = args
         tets = np.load('data/tets/%d_compress.npz' % (grid_res))
         self.verts = torch.from_numpy(tets['vertices']).float().to(self.device)
+        # Make sure the tet is zero-centered and length is equal to 1
+        length = self.verts.max(dim=0)[0] - self.verts.min(dim=0)[0]
+        length = length.max()
+        mid = (self.verts.max(dim=0)[0] + self.verts.min(dim=0)[0]) / 2.0
+        self.verts = (self.verts - mid.unsqueeze(dim=0)) / length
         if isinstance(scale, list):
             self.verts[:, 0] = self.verts[:, 0] * scale[0]
             self.verts[:, 1] = self.verts[:, 1] * scale[1]
