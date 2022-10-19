@@ -51,9 +51,13 @@ def inference(
     bias_act._init()
     filtered_lrelu._init()
 
+    import random
     device = torch.device('cuda', rank)
     np.random.seed(random_seed * num_gpus + rank)
     torch.manual_seed(random_seed * num_gpus + rank)
+    random.seed(random_seed * num_gpus + rank)
+    torch.cuda.manual_seed(random_seed * num_gpus + rank)
+    torch.cuda.manual_seed_all(random_seed * num_gpus + rank)
     torch.backends.cudnn.enabled = True
     torch.backends.cudnn.benchmark = True  # Improves training speed.
     torch.backends.cuda.matmul.allow_tf32 = True  # Improves numerical accuracy.
