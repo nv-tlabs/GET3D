@@ -62,7 +62,7 @@ def launch_training(c, desc, outdir, dry_run):
     prev_run_ids = [int(x.group()) for x in prev_run_ids if x is not None]
     cur_run_id = max(prev_run_ids, default=-1) + 1
     if c.inference_vis:
-        c.run_dir = os.path.join(outdir, 'inference')
+        c.run_dir = os.path.join(outdir)
     else:
         c.run_dir = os.path.join(outdir, f'{cur_run_id:05d}-{desc}')
         assert not os.path.exists(c.run_dir)
