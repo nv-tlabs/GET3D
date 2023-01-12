@@ -80,7 +80,7 @@ render it.
 #### Clone the gitlab code and necessary files:
 
 ```bash
-cd YOUR_CODE_PARH
+cd YOUR_CODE_PATH
 git clone git@github.com:nv-tlabs/GET3D.git
 cd GET3D; mkdir cache; cd cache
 wget https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/metrics/inception-2015-12-05.pkl
@@ -103,7 +103,7 @@ python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path 
 python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=400 --data_camera_mode shapenet_chair  --dmtet_scale 0.8  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0
 ```
 
-- If want to train on seperate generators (main Figure in the paper):
+- If want to train on separate generators (main Figure in the paper):
 
 ```bash
 python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=40 --data_camera_mode shapenet_car  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 0
@@ -136,7 +136,7 @@ python train_3d.py --outdir=save_inference_results/shapenet_motorbike  --gpus=1 
 - To generate the results with latent code interpolation, add one option to the inference
   command: `--inference_save_interpolation 1`
 
-### Evluation metrics
+### Evaluation metrics
 
 ##### Compute FID
 
@@ -164,6 +164,7 @@ GET3D builds upon several previous works:
 - [Learning Deformable Tetrahedral Meshes for 3D Reconstruction (NeurIPS 2020)](https://nv-tlabs.github.io/DefTet/)
 - [Deep Marching Tetrahedra: a Hybrid Representation for High-Resolution 3D Shape Synthesis (NeurIPS 2021)](https://nv-tlabs.github.io/DMTet/)
 - [Extracting Triangular 3D Models, Materials, and Lighting From Images (CVPR 2022)](https://nvlabs.github.io/nvdiffrec/)
+- [EG3D: Efficient Geometry-aware 3D Generative Adversarial Networks (CVPR 2022)](https://nvlabs.github.io/eg3d/)
 - [DIB-R++: Learning to Predict Lighting and Material with a Hybrid Differentiable Renderer (NeurIPS 2021)](https://nv-tlabs.github.io/DIBRPlus/)
 - [Nvdiffrast – Modular Primitives for High-Performance Differentiable Rendering (SIGRAPH Asia 2020)](https://nvlabs.github.io/nvdiffrast/)
 
