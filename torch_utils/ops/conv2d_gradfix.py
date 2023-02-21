@@ -11,6 +11,7 @@ arbitrarily high order gradients with zero performance penalty."""
 
 import contextlib
 import torch
+from pkg_resources import parse_version
 
 # pylint: disable=redefined-builtin
 # pylint: disable=arguments-differ
@@ -20,6 +21,7 @@ import torch
 
 enabled = False  # Enable the custom op by setting this to true.
 weight_gradients_disabled = False  # Forcefully disable computation of gradients with respect to the weights.
+_use_pytorch_1_11_api = parse_version(torch.__version__) >= parse_version('1.11.0a') # Allow prerelease builds of 1.11
 
 
 @contextlib.contextmanager
@@ -54,6 +56,8 @@ def _should_use_custom_op(input):
         return False
     if input.device.type != 'cuda':
         return False
+    if _use_pytorch_1_11_api:
+         return False
     return True
 
 
