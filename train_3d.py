@@ -30,7 +30,7 @@ def subprocess_fn(rank, c, temp_dir):
         if os.name == 'nt':
             init_method = 'file:///' + init_file.replace('\\', '/')
             torch.distributed.init_process_group(
-                backend='gloo', icfgnit_method=init_method, rank=rank, world_size=c.num_gpus)
+                backend='gloo', init_method=init_method, rank=rank, world_size=c.num_gpus)
         else:
             init_method = f'file://{init_file}'
             torch.distributed.init_process_group(
