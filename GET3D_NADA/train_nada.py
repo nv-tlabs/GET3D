@@ -53,6 +53,14 @@ def subprocess_fn(rank, config, args, temp_dir):
 
     if config['GLOBAL']['gpus'] > 1:
         dist_util.setup_dist(temp_dir, rank, config['GLOBAL']['gpus'])
+    try:
+        train(rank, config, args, temp_dir)
+    finally:
+        if dist_util.is_initialized():
+            dist_util.dist.destroy_process_group()
+
+
+def train(rank, config, args, temp_dir):
 
     if rank != 0:
         custom_ops.verbosity = 'none'
