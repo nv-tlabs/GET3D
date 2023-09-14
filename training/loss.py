@@ -35,7 +35,7 @@ def sdf_reg_loss_batch(sdf, all_edges):
 class StyleGAN2Loss(Loss):
     def __init__(
             self, device, G, D, r1_gamma=10, style_mixing_prob=0, pl_weight=0,
-            gamma_mask=10, ):
+            gamma_mask=10, lambda_flexicubes_surface_reg=1, lambda_flexicubes_weights_reg=0.1):
         super().__init__()
         self.device = device
         self.G = G
@@ -44,6 +44,8 @@ class StyleGAN2Loss(Loss):
         self.style_mixing_prob = style_mixing_prob
         self.pl_weight = pl_weight
         self.gamma_mask = gamma_mask
+        self.lambda_flexicubes_surface_reg = lambda_flexicubes_surface_reg
+        self.lambda_flexicubes_weights_reg = lambda_flexicubes_weights_reg
 
     def run_G(
             self, z, c, update_emas=False, return_shape=False,
@@ -134,8 +136,18 @@ class StyleGAN2Loss(Loss):
                 sdf_reg_loss_entropy = sdf_reg_loss_batch(gen_sdf, self.G.synthesis.dmtet_geometry.all_edges).mean() * 0.01
                 training_stats.report('Loss/G/sdf_reg', sdf_reg_loss_entropy)
                 loss_Gmain += sdf_reg_loss_entropy
-                training_stats.report('Loss/G/sdf_reg_abs', sdf_reg_loss)
-                loss_Gmain += sdf_reg_loss.mean()
+                if self.G.synthesis.iso_surface == 'flexicubes':
+                    edge_sdf_reg_loss, flexicubes_surface_reg, flexicubes_weights_reg = sdf_reg_loss
+                    training_stats.report('Loss/G/sdf_reg_abs', edge_sdf_reg_loss)
+                    training_stats.report('Loss/G/flexicubes_surface_reg', flexicubes_surface_reg.mean())
+                    training_stats.report('Loss/G/flexicubes_weights_reg', flexicubes_weights_reg.mean())
+                    loss_Gmain += edge_sdf_reg_loss.mean() 
+                    loss_Gmain += flexicubes_surface_reg.mean() * self.lambda_flexicubes_surface_reg
+                    loss_Gmain += flexicubes_weights_reg.mean() * self.lambda_flexicubes_weights_reg
+                else:
+                    edge_sdf_reg_loss, _, _ = sdf_reg_loss
+                    training_stats.report('Loss/G/sdf_reg_abs', edge_sdf_reg_loss)
+                    loss_Gmain += edge_sdf_reg_loss.mean()
 
             with torch.autograd.profiler.record_function('Gmain_backward'):
                 loss_Gmain.mean().mul(gain).backward()

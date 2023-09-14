@@ -75,6 +75,9 @@ GET3D is trained on synthetic dataset. We provide rendering scripts for Shapenet
 refer to [readme](./render_shapenet_data/README.md) to download shapenet dataset and
 render it.
 
+## Employing FlexiCubes
+This branch integrates [FlexiCubes](https://research.nvidia.com/labs/toronto-ai/flexicubes/), our lastest high-quality isosurface representation. To leverage FlexiCubes as an alternative to DMTet for isosurfacing, simply append `--iso_surface flexicubes` to the following training and inference commands.
+
 ## Train the model
 
 #### Clone the gitlab code and necessary files:

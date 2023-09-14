@@ -13,6 +13,7 @@ from torch_utils import persistence
 import nvdiffrast.torch as dr
 from training.sample_camera_distribution import sample_camera, create_camera_from_angle
 from uni_rep.rep_3d.dmtet import DMTetGeometry
+from uni_rep.rep_3d.flexicubes_geometry import FlexiCubesGeometry
 from uni_rep.camera.perspective_camera import PerspectiveCamera
 from uni_rep.render.neural_render import NeuralRender
 from training.discriminator_architecture import Discriminator
@@ -41,6 +42,7 @@ class DMTETSynthesisNetwork(torch.nn.Module):
             dmtet_scale=1.8,
             inference_noise_mode='random',
             one_3d_generator=False,
+            iso_surface='dmtet',
             **block_kwargs,  # Arguments for SynthesisBlock.
     ):  #
         assert img_resolution >= 4 and img_resolution & (img_resolution - 1) == 0
@@ -50,6 +52,8 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         self.inference_noise_mode = inference_noise_mode
         self.dmtet_scale = dmtet_scale
         self.deformation_multiplier = deformation_multiplier
+        if iso_surface == "flexicubes":
+            self.deformation_multiplier *= 2
         self.geometry_type = geometry_type
 
         self.data_camera_mode = data_camera_mode
@@ -62,7 +66,8 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         self.img_channels = img_channels
         self.n_views = n_views
         self.grid_res = tet_res
-
+        self.iso_surface = iso_surface
+        
         # Camera defination, we follow the defination from Blender (check the render_shapenet_data/rener_shapenet.py for more details)
         fovy = np.arctan(32 / 2 / 35) * 2
         fovyangle = fovy / np.pi * 180.0
@@ -72,9 +77,14 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         dmtet_renderer = NeuralRender(device, camera_model=dmtet_camera)
 
         # Geometry class for DMTet
-        self.dmtet_geometry = DMTetGeometry(
-            grid_res=self.grid_res, scale=self.dmtet_scale, renderer=dmtet_renderer, render_type=render_type,
-            device=self.device)
+        if self.iso_surface == 'dmtet':
+            self.dmtet_geometry = DMTetGeometry(
+                grid_res=self.grid_res, scale=self.dmtet_scale, renderer=dmtet_renderer, render_type=render_type,
+                device=self.device)
+        elif self.iso_surface == 'flexicubes':
+            self.dmtet_geometry = FlexiCubesGeometry(
+                grid_res=self.grid_res, scale=self.dmtet_scale, renderer=dmtet_renderer, render_type=render_type,
+                device=self.device)
 
         self.feat_channel = feat_channel
         self.mlp_latent_channel = mlp_latent_channel
@@ -92,6 +102,7 @@ class DMTETSynthesisNetwork(torch.nn.Module):
                 tri_plane_resolution=tri_plane_resolution,
                 device=self.device,
                 mlp_latent_channel=self.mlp_latent_channel,
+                iso_surface=self.iso_surface,
                 **block_kwargs)
         else:
             # Use convolutional 3D for geometry generation
@@ -165,14 +176,21 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         :param sdf_feature: triplane feature map for the geometry
         :return:
         '''
+        weight = None
         if position is None:
             init_position = self.dmtet_geometry.verts.unsqueeze(dim=0)
         else:
             init_position = position
-
+        
         # Step 1: predict the SDF and deformation
         if self.one_3d_generator:
-            sdf, deformation = self.generator.get_sdf_def_prediction(
+            if self.iso_surface == 'flexicubes':
+                sdf, deformation, weight = self.generator.get_sdf_def_prediction(
+                sdf_feature, ws_geo=ws,
+                position=init_position.expand(ws.shape[0], -1, -1),
+                flexicubes_indices=self.dmtet_geometry.indices)
+            else:
+                sdf, deformation = self.generator.get_sdf_def_prediction(
                 sdf_feature, ws_geo=ws,
                 position=init_position.expand(ws.shape[0], -1, -1))
         else:
@@ -198,9 +216,16 @@ class DMTETSynthesisNetwork(torch.nn.Module):
 
         ####
         # Step 3: Fix some sdf if we observe empty shape (full positive or full negative)
-        pos_shape = torch.sum((sdf.squeeze(dim=-1) > 0).int(), dim=-1)
-        neg_shape = torch.sum((sdf.squeeze(dim=-1) < 0).int(), dim=-1)
-        zero_surface = torch.bitwise_or(pos_shape == 0, neg_shape == 0)
+        if self.iso_surface == 'flexicubes':
+            sdf_bxnxnxn = sdf.reshape((sdf.shape[0], self.grid_res + 1, self.grid_res + 1, self.grid_res + 1))
+            sdf_less_boundary = sdf_bxnxnxn[:, 1:-1, 1:-1, 1:-1].reshape(sdf.shape[0], -1)
+            pos_shape = torch.sum((sdf_less_boundary > 0).int(), dim=-1)
+            neg_shape = torch.sum((sdf_less_boundary < 0).int(), dim=-1)
+            zero_surface = torch.bitwise_or(pos_shape == 0, neg_shape == 0)
+        else:
+            pos_shape = torch.sum((sdf.squeeze(dim=-1) > 0).int(), dim=-1)
+            neg_shape = torch.sum((sdf.squeeze(dim=-1) < 0).int(), dim=-1)
+            zero_surface = torch.bitwise_or(pos_shape == 0, neg_shape == 0)
         if torch.sum(zero_surface).item() > 0:
             update_sdf = torch.zeros_like(sdf[0:1])
             max_sdf = sdf.max()
@@ -229,7 +254,7 @@ class DMTETSynthesisNetwork(torch.nn.Module):
                 final_def.append(deformation[i_batch: i_batch + 1])
         sdf = torch.cat(final_sdf, dim=0)
         deformation = torch.cat(final_def, dim=0)
-        return sdf, deformation, sdf_reg_loss
+        return sdf, deformation, sdf_reg_loss, weight
 
     def get_geometry_prediction(self, ws, sdf_feature=None):
         '''
@@ -240,7 +265,7 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         '''
 
         # Step 1: first get the sdf and deformation value for each vertices in the tetrahedon grid.
-        sdf, deformation, sdf_reg_loss = self.get_sdf_deformation_prediction(
+        sdf, deformation, sdf_reg_loss, weight = self.get_sdf_deformation_prediction(
             ws,
             sdf_feature=sdf_feature)
         v_deformed = self.dmtet_geometry.verts.unsqueeze(dim=0).expand(sdf.shape[0], -1, -1) + deformation
@@ -248,15 +273,27 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         n_batch = ws.shape[0]
         v_list = []
         f_list = []
-
+        flexicubes_surface_reg_list = []
         # Step 2: Using marching tet to obtain the mesh
         for i_batch in range(n_batch):
-            verts, faces = self.dmtet_geometry.get_mesh(
+            if self.iso_surface == 'flexicubes':
+                verts, faces, flexicubes_surface_reg = self.dmtet_geometry.get_mesh(
+                v_deformed[i_batch], sdf[i_batch].squeeze(dim=-1),
+                with_uv=False, indices=tets, weight_n=weight[i_batch].squeeze(dim=-1),
+                is_training=self.training)     
+                flexicubes_surface_reg_list.append(flexicubes_surface_reg)           
+            elif self.iso_surface == 'dmtet':
+                verts, faces = self.dmtet_geometry.get_mesh(
                 v_deformed[i_batch], sdf[i_batch].squeeze(dim=-1),
                 with_uv=False, indices=tets)
             v_list.append(verts)
             f_list.append(faces)
-        return v_list, f_list, sdf, deformation, v_deformed, sdf_reg_loss
+        if self.iso_surface == 'flexicubes':
+            flexicubes_surface_reg = torch.cat(flexicubes_surface_reg_list).mean()
+            flexicubes_weight_reg = (weight ** 2).mean()
+        else:
+            flexicubes_surface_reg, flexicubes_weight_reg = None, None
+        return v_list, f_list, sdf, deformation, v_deformed, (sdf_reg_loss, flexicubes_surface_reg, flexicubes_weight_reg)
 
     def get_texture_prediction(self, ws, tex_pos, ws_geo=None, hard_mask=None, tex_feature=None):
         '''

@@ -1448,6 +1448,7 @@ class TriPlaneTexGeo(torch.nn.Module):
             self,
             w_dim,  # Intermediate latent (W) dimensionality.
             img_channels,  # Number of color channels.
+            iso_surface,
             shape_min=-1.0,
             shape_lenght=2.0,
             tri_plane_resolution=128,
@@ -1464,6 +1465,7 @@ class TriPlaneTexGeo(torch.nn.Module):
         self.tri_plane_resolution = tri_plane_resolution
         self.shape_min = shape_min
         self.shape_lenght = shape_lenght
+        self.iso_surface = iso_surface
 
         self.tri_plane_synthesis = SynthesisNetworkTexGeo(
             w_dim=self.w_dim, img_resolution=self.tri_plane_resolution,
@@ -1497,7 +1499,14 @@ class TriPlaneTexGeo(torch.nn.Module):
             latent_channel=mlp_latent_channel,
             input_channel=mlp_input_channel,
             device=device)
-
+        if self.iso_surface == "flexicubes":
+            self.mlp_synthesis_weight = ImplicitSynthesisNetwork(
+                out_channels=21,
+                n_layers=self.n_implicit_layer,
+                w_dim=self.w_dim,
+                latent_channel=mlp_latent_channel,
+                input_channel=mlp_input_channel * 8,
+                device=device)
         self.num_ws_geo = self.num_ws_geo + self.mlp_synthesis_sdf.num_ws
         self.num_ws_tex = self.num_ws_tex + self.mlp_synthesis_tex.num_ws
 
@@ -1515,7 +1524,7 @@ class TriPlaneTexGeo(torch.nn.Module):
         tex_feature = plane_feat[:, self.img_feat_dim * 3:]
         return sdf_feature, tex_feature
 
-    def get_sdf_def_prediction(self, sdf_feature, position, ws_geo):
+    def get_sdf_def_prediction(self, sdf_feature, position, ws_geo, flexicubes_indices=None):
         '''
         Predicting SDF and deformation for the vertices
         :param sdf_feature: triplane feature for geometry
@@ -1549,6 +1558,12 @@ class TriPlaneTexGeo(torch.nn.Module):
         final_feat = final_feat.squeeze(dim=2).permute(0, 2, 1)  # 32dimension
         sdf = self.mlp_synthesis_sdf(ws_geo, final_feat)
         deformation = self.mlp_synthesis_def(ws_geo, final_feat)
+        if self.iso_surface == 'flexicubes':
+            grid_feat = torch.index_select(input=final_feat, index=flexicubes_indices.reshape(-1),dim=1)
+            grid_feat = grid_feat.reshape(final_feat.shape[0], flexicubes_indices.shape[0], flexicubes_indices.shape[1] * final_feat.shape[-1])
+            weight = self.mlp_synthesis_weight(ws_geo, grid_feat)
+            weight = weight * 0.1
+            return sdf, deformation, weight
         return sdf, deformation
 
     def get_texture_prediction(self, tex_feature, position, ws_tex):

@@ -171,6 +171,7 @@ def parse_comma_separated_list(s):
 @click.option('--data_camera_mode', help='The type of dataset we are using', type=str, default='shapenet_car', show_default=True)
 @click.option('--use_shapenet_split', help='whether use the training split or all the data for training', metavar='BOOL', type=bool, default=False, show_default=False)
 ### Configs for 3D generator##########
+@click.option('--iso_surface', help='Differentiable iso-surfacing method', type=click.Choice(['dmtet', 'flexicubes']), default='dmtet')
 @click.option('--use_style_mixing', help='whether use style mixing for generation during inference', metavar='BOOL', type=bool, default=True, show_default=False)
 @click.option('--one_3d_generator', help='whether we detach the gradient for empty object', metavar='BOOL', type=bool, default=True, show_default=True)
 @click.option('--dmtet_scale', help='Scale for the dimention of dmtet', metavar='FLOAT', type=click.FloatRange(min=0, max=10.0), default=1.0, show_default=True)
@@ -191,6 +192,9 @@ def parse_comma_separated_list(s):
 @click.option('--gamma_mask', help='R1 regularization weight for mask', metavar='FLOAT', type=click.FloatRange(min=0), default=0.0, required=False)
 @click.option('--d_reg_interval', help='The internal for R1 regularization', metavar='INT', type=click.IntRange(min=1), default=16)
 @click.option('--add_camera_cond', help='Whether we add camera as condition for discriminator', metavar='BOOL', type=bool, default=True, show_default=True)
+@click.option('--lambda_flexicubes_surface_reg', help='Weights for flexicubes regularization L_dev', metavar='FLOAT', type=click.FloatRange(min=0), default=0.5, required=False)
+@click.option('--lambda_flexicubes_weights_reg', help='Weights for flexicubes regularization on weights', metavar='FLOAT', type=click.FloatRange(min=0), default=0.1, required=False)
+
 ## Miscs
 # Optional features.
 @click.option('--cond', help='Train conditional model', metavar='BOOL', type=bool, default=False, show_default=True)
@@ -246,6 +250,7 @@ def main(**kwargs):
     c.training_set_kwargs.use_labels = opts.cond
     c.training_set_kwargs.xflip = False
     # Hyperparameters & settings.p
+    c.G_kwargs.iso_surface = opts.iso_surface
     c.G_kwargs.one_3d_generator = opts.one_3d_generator
     c.G_kwargs.n_implicit_layer = opts.n_implicit_layer
     c.G_kwargs.deformation_multiplier = opts.deformation_multiplier
@@ -281,6 +286,8 @@ def main(**kwargs):
     c.D_kwargs.epilogue_kwargs.mbstd_group_size = opts.mbstd_group
     c.loss_kwargs.gamma_mask = opts.gamma if opts.gamma_mask == 0.0 else opts.gamma_mask
     c.loss_kwargs.r1_gamma = opts.gamma
+    c.loss_kwargs.lambda_flexicubes_surface_reg = opts.lambda_flexicubes_surface_reg
+    c.loss_kwargs.lambda_flexicubes_weights_reg = opts.lambda_flexicubes_weights_reg
     c.G_opt_kwargs.lr = (0.002 if opts.cfg == 'stylegan2' else 0.0025) if opts.glr is None else opts.glr
     c.D_opt_kwargs.lr = opts.dlr
     c.metrics = opts.metrics
