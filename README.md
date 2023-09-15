@@ -36,6 +36,7 @@ form: [NVIDIA Research Licensing](https://www.nvidia.com/en-us/research/inquirie
 
 ## News
 
+- 2023-09-15: We added the support for [FlexiCubes](https://research.nvidia.com/labs/toronto-ai/flexicubes/) as a drop-in replacement for DMTet. Please refer to this [section](https://github.com/nv-tlabs/GET3D#employing-flexicubes) for more details. 
 - 2022-10-13: Pretrained model on Shapenet released! Check more details [here](./pretrained_model)
 - 2022-09-29: Code released!
 - 2022-09-22: Code will be uploaded next week!
@@ -76,7 +77,7 @@ refer to [readme](./render_shapenet_data/README.md) to download shapenet dataset
 render it.
 
 ## Employing FlexiCubes
-This branch integrates [FlexiCubes](https://research.nvidia.com/labs/toronto-ai/flexicubes/), our lastest high-quality isosurface representation. To leverage FlexiCubes as an alternative to DMTet for isosurfacing, simply append `--iso_surface flexicubes` to the following training and inference commands.
+We integrate [FlexiCubes](https://research.nvidia.com/labs/toronto-ai/flexicubes/), our lastest high-quality isosurface representation. To leverage FlexiCubes as an alternative to DMTet for isosurfacing, simply append `--iso_surface flexicubes` to the following training and inference commands.
 
 ## Train the model
 
