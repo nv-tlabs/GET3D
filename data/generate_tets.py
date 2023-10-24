@@ -33,7 +33,9 @@ def generate_tetrahedrons(res=50, root='..'):
     tetrahedrons = []
     vertices = []
     if res > 1.0:
-        res = 1.0 / res
+        _res = 1.0 / res
+    else:
+        _res = res
 
     root_path = os.path.join(root, 'quartet/meshes')
     file_name = os.path.join(root_path, 'cube_%f_tet.tet' % (res))
@@ -41,7 +43,7 @@ def generate_tetrahedrons(res=50, root='..'):
     # generate tetrahedron is not exist files
     if not os.path.exists(file_name):
         command = 'cd %s/quartet; ' % (root) + \
-                  './quartet meshes/cube.obj %f meshes/cube_%f_tet.tet -s meshes/cube_boundary_%f.obj' % (res, res, res)
+                  './quartet meshes/cube.obj %f meshes/cube_%f_tet.tet -s meshes/cube_boundary_%f.obj' % (_res, _res, _res)
         os.system(command)
 
     with open(file_name, 'r') as f:
@@ -63,7 +65,7 @@ def generate_tetrahedrons(res=50, root='..'):
     assert len(tetrahedrons) == n_t
     assert len(vertices) == n_vert
     vertices = np.asarray(vertices)
-    vertices[vertices <= (0 + res / 4.0)] = 0  # determine the boundary point
-    vertices[vertices >= (1 - res / 4.0)] = 1  # determine the boundary point
+    vertices[vertices <= (0 + _res / 4.0)] = 0  # determine the boundary point
+    vertices[vertices >= (1 - _res / 4.0)] = 1  # determine the boundary point
     np.savez_compressed('%d_compress' % (res), vertices=vertices, tets=tetrahedrons)
     return vertices, tetrahedrons
