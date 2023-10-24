@@ -1,1 +1,5 @@
+outputs
+cache
 .DS_Store
+*__pycache*
+.idea

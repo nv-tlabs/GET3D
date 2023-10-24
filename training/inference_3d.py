@@ -51,7 +51,7 @@ def inference(
     bias_act._init()
     filtered_lrelu._init()
 
-    device = torch.device('cuda', rank)
+    device = torch.device('cuda')
     np.random.seed(random_seed * num_gpus + rank)
     torch.manual_seed(random_seed * num_gpus + rank)
     torch.backends.cudnn.enabled = True

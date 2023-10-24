@@ -64,7 +64,7 @@ fusion_intrisics = np.array(
         [0, options.focal_length_y, options.principal_point_y],
         [0, 0, 1]
     ])
-glctx = dr.RasterizeGLContext()
+glctx = dr.RasterizeCudaContext()
 
 
 def CalcLinearZ(depth):
