@@ -32,6 +32,9 @@ parser.add_argument(
     '--resolution', type=int, default=512,
     help='Resolution of the images.')
 parser.add_argument(
+    '--gpu', type=int, default=0,
+    help='gpu.')
+parser.add_argument(
     '--engine', type=str, default='CYCLES',
     help='Blender internal engine for rendering. E.g. CYCLES, BLENDER_EEVEE, ...')
 
@@ -83,12 +86,11 @@ def enable_cuda_devices():
     # If we have CUDA/OPENCL devices, enable only them, otherwise enable
     # all devices (assumed to be CPU)
     print(cprefs.devices)
-    for device in cprefs.devices:
-        device.use = not accelerated or device.type in acceleratedTypes
+    for idx, device in enumerate(cprefs.devices):
+        device.use = (not accelerated or device.type in acceleratedTypes) and idx == args.gpu
         print('Device enabled ({type}) = {enabled}'.format(type=device.type, enabled=device.use))
 
     return accelerated
-
 
 enable_cuda_devices()
 context.active_object.select_set(True)
