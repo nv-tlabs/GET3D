@@ -412,6 +412,26 @@ class DMTETSynthesisNetwork(torch.nn.Module):
         else:
             mesh_v, mesh_f, sdf, deformation, v_deformed, sdf_reg_loss = self.get_geometry_prediction(ws_geo)
 
+        # Step 1.5: fix the mesh
+        import pymesh
+        mesh_v_processed = []
+        mesh_f_processed = []
+
+        for v, f in zip(mesh_v, mesh_f):
+            mesh = pymesh.form_mesh(vertices=v.cpu().numpy(), faces=f.cpu().numpy())
+            mesh, info = pymesh.remove_isolated_vertices(mesh)
+            mesh, info = pymesh.remove_duplicated_vertices(mesh, 1e-3)
+            print(info)
+
+            tensor_vertices = torch.from_numpy(mesh.vertices).float().to(self.device)
+            tensor_faces = torch.from_numpy(mesh.faces).long().to(self.device)
+            mesh_v_processed.append(tensor_vertices)
+            mesh_f_processed.append(tensor_faces)
+
+        mesh_v = mesh_v_processed
+        mesh_f = mesh_f_processed
+
+
         # Step 2: use x-atlas to get uv mapping for the mesh
         from training.extract_texture_map import xatlas_uvmap
         all_uvs = []
