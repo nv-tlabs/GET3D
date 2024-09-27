@@ -2,7 +2,7 @@
 
 ## Pretrained model
 
-We released the pretrained model [here](https://drive.google.com/drive/folders/1oJ-FmyVYjIwBZKDAQ4N1EEcE9dJjumdW?usp=sharing) with the [License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+We released the pretrained model [here](https://huggingface.co/JunGaoNVIDIA/get3d-ckpt/tree/main) with the [License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 - Running inference only requires 1 GPU with >= 16GB GPU memory. 
 - We provide the checkpoints for ShapeNet Car, Chair and Motorbikes that are trained on the `train.txt` subsets at `./3dgan_data_split`.
