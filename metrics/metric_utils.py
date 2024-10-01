@@ -46,15 +46,16 @@ def save_image_grid(img, fname, drange, grid_size):
 # ----------------------------------------------------------------------------
 
 class MetricOptions:
-    def __init__(self, G=None, G_kwargs={}, dataset_kwargs={}, num_gpus=1, rank=0, device=None, progress=None, cache=True):
+    def __init__(self, G=None, G_kwargs={}, dataset_kwargs={}, num_gpus=1, rank=0, device=None, progress=None, cache=True, batch_size=None):
         assert 0 <= rank < num_gpus
         self.G = G
         self.G_kwargs = dnnlib.EasyDict(G_kwargs)
         self.dataset_kwargs = dnnlib.EasyDict(dataset_kwargs)
         self.num_gpus = num_gpus
         self.rank = rank
-        self.device = device if device is not None else torch.device('cuda', rank)
+        self.device = device if device is not None else torch.device('cuda')
         self.progress = progress.sub() if progress is not None and rank == 0 else ProgressMonitor()
+        self.batch_size = batch_size
         self.cache = cache
 
 
@@ -227,7 +228,9 @@ class ProgressMonitor:
 
 
 # ----------------------------------------------------------------------------
-def compute_feature_stats_for_dataset(opts, detector_url, detector_kwargs, rel_lo=0, rel_hi=1, batch_size=64, data_loader_kwargs=None, max_items=None, **stats_kwargs):
+def compute_feature_stats_for_dataset(opts, detector_url, detector_kwargs, rel_lo=0, rel_hi=1, batch_size=None, data_loader_kwargs=None, max_items=None, **stats_kwargs):
+    if not batch_size:
+        batch_size = opts.batch_size
     dataset = dnnlib.util.construct_class_by_name(**opts.dataset_kwargs)
     if data_loader_kwargs is None:
         data_loader_kwargs = dict(pin_memory=True, num_workers=3, prefetch_factor=2)

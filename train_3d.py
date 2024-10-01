@@ -21,23 +21,32 @@ from training import inference_3d
 
 
 # ----------------------------------------------------------------------------
-def subprocess_fn(rank, c, temp_dir):
+def subprocess_fn(local_rank, c, temp_dir):
     dnnlib.util.Logger(file_name=os.path.join(c.run_dir, 'log.txt'), file_mode='a', should_flush=True)
 
+    rank = 0
     # Init torch.distributed.
     if c.num_gpus > 1:
+        rank = int(os.environ['RANK'])  # 当前机器编号
+        gpus = torch.cuda.device_count()  # 每台机器的GPU个数
+        rank = rank * gpus + local_rank
+        hosts = int(os.environ['WORLD_SIZE'])  # 机器个数
+        c.num_gpus = hosts * gpus
+
         init_file = os.path.abspath(os.path.join(temp_dir, '.torch_distributed_init'))
         if os.name == 'nt':
             init_method = 'file:///' + init_file.replace('\\', '/')
             torch.distributed.init_process_group(
                 backend='gloo', init_method=init_method, rank=rank, world_size=c.num_gpus)
         else:
-            init_method = f'file://{init_file}'
+            ip = os.environ.get('MASTER_ADDR', 'localhost')
+            port = os.environ['MASTER_PORT']
+            init_method = f'tcp://{ip}:{port}'
             torch.distributed.init_process_group(
                 backend='nccl', init_method=init_method, rank=rank, world_size=c.num_gpus)
-
+            torch.cuda.set_device(local_rank)
     # Init torch_utils.
-    sync_device = torch.device('cuda', rank) if c.num_gpus > 1 else None
+    sync_device = torch.device('cuda') if c.num_gpus > 1 else None
     training_stats.init_multiprocessing(rank=rank, sync_device=sync_device)
     if rank != 0:
         custom_ops.verbosity = 'none'
@@ -100,9 +109,10 @@ def launch_training(c, desc, outdir, dry_run):
     torch.multiprocessing.set_start_method('spawn', force=True)
     with tempfile.TemporaryDirectory() as temp_dir:
         if c.num_gpus == 1:
-            subprocess_fn(rank=0, c=c, temp_dir=temp_dir)
+            subprocess_fn(local_rank=0, c=c, temp_dir=temp_dir)
         else:
-            torch.multiprocessing.spawn(fn=subprocess_fn, args=(c, temp_dir), nprocs=c.num_gpus)
+            ngpus = torch.cuda.device_count()
+            torch.multiprocessing.spawn(fn=subprocess_fn, args=(c, temp_dir), nprocs=ngpus)
 
 
 # ----------------------------------------------------------------------------
@@ -296,7 +306,8 @@ def main(**kwargs):
     c.image_snapshot_ticks = c.network_snapshot_ticks = opts.snap
     c.random_seed = c.training_set_kwargs.random_seed = opts.seed
     c.data_loader_kwargs.num_workers = opts.workers
-    c.network_snapshot_ticks = 200
+    if opts.gpus <= 8:
+        c.network_snapshot_ticks = 200
     # Sanity checks.
     if c.batch_size % c.num_gpus != 0:
         raise click.ClickException('--batch must be a multiple of --gpus')
