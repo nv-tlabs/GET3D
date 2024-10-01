@@ -1,0 +1,68 @@
+# Global config
+GLOBAL:
+  outdir: 'results/shoes_mossy_example'                         # directory path to save ckpt & results
+  resume_pretrain: '../pretrained_model/shoes-00204.pt'         # path to pretrained GET3D model
+  batch: 3                                                      # same as # of samples
+  gpus: 2                                                       # num of gpu
+  sample_1st: 500
+  sample_2nd: -1
+  iter_1st: 1
+  iter_2nd: 3
+  output_interval: 1
+  save_interval: 1
+  vis_samples: 9                                                # num. of images to be visualized
+
+
+# GET3D config
+GET3D:
+  # (1) basic
+  cfg: 'stylegan2'
+  gamma: 40
+  img_res: 1024
+  data_camera_mode: 'shapenet_car'
+
+  # (2) 3D generator : note that these are used at 'G_kwargs'
+  use_style_mixing: True                                        # Use style mixing for generation during inference
+  one_3d_generator: True                                        # Use improved get3d version
+  dmtet_scale: 1.0                                              # Scale for the dimension of dmtet
+  n_implicit_layer: 1                                           # Number of Implicit FC layer for XYZPlaneTex model
+  feat_channel: 16                                              # Feature channel for TORGB layer
+  mlp_latent_channel: 32                                        # mlp_latent_channel for XYZPlaneTex network
+  deformation_multiplier: 1                                     # Multiplier for the predicted deformation
+  tri_plane_resolution: 256                                     # The resolution for tri plane
+  n_views: 8                                                    # GET3D setting : ! DO NOT FIX !
+  use_tri_plane: True                                           # To use tri plane representation
+  tet_res: 90                                                   # Resolution for teteahedron
+  latent_dim: 512                                               # Dimension for latent code
+  geometry_type: 'conv3d'                                       # The type of geometry generator
+  render_type: 'neural_render'                                  # Type of renderer we used
+
+  # (3) Misc
+  cbase: 32768                                                  # Capacity multiplier
+  cmax: 512                                                     # Max. feature maps
+  glr: 0.002                                                    # G learning rate
+  mbstd-group: 4                                                # minibatch std group size
+  c_dim: 0                                                      # class condition
+  img_channels: 3                                               # RGB image : ! DO NOT FIX !
+
+# NADA config
+NADA:
+  # (1) basic
+  lr: 0.002
+  lambda_direction: 1                                           # strength of directional CLIP loss
+  clip_models: ['ViT-B/32', 'ViT-B/16']                         # CLIP image encoder
+  clip_models_weight: [1.0, 1.0]                                # weight for CLIP image encdoer
+
+  # (2) optional  
+  lambda_patch: 0.0
+  lambda_global: 0.0
+  lambda_texture: 0.0
+  lambda_manifold: 0.0
+
+  # (3) settings - text / layer-freezing
+  source_text: 'shoes'
+  target_text: 'mossy'
+  auto_layer_iters: 1
+  auto_layer_k: 30
+  auto_layer_batch: 12
+  gradient_clip_threshold: -1
