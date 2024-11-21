@@ -163,7 +163,7 @@ def save_visualization(
     :param image_snapshot_ticks: current snapshot ticks
     :param save_gif_name: the name to save if we want to export gif
     :param save_all:  whether we want to save gif or not
-    :param grid_tex_z: the latent code for texture geenration
+    :param grid_tex_z: the latent code for texture generation
     :return:
     '''
     with torch.no_grad():
